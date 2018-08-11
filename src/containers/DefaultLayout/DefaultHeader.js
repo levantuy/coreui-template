@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { AppAsideToggler, AppHeaderDropdown, AppNavbarBrand, AppSidebarToggler } from '@coreui/react';
 import logo from '../../assets/img/brand/logo.svg'
 import sygnet from '../../assets/img/brand/sygnet.svg'
+import { IndexLinkContainer } from 'react-router-bootstrap';
 
 const propTypes = {
   children: PropTypes.node,
@@ -29,7 +30,9 @@ class DefaultHeader extends Component {
 
         <Nav className="d-md-down-none" navbar>
           <NavItem className="px-3">
-            <NavLink href="/">Dashboard</NavLink>
+          <IndexLinkContainer to="/app">
+            <NavLink href="/dashboard">Dashboard</NavLink>
+          </IndexLinkContainer>            
           </NavItem>
           <NavItem className="px-3">
             <NavLink href="#/users">Users</NavLink>

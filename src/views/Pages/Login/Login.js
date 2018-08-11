@@ -1,7 +1,36 @@
 import React, { Component } from 'react';
 import { Button, Card, CardBody, CardGroup, Col, Container, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
+import { reduxForm } from 'redux-form';
 
 class Login extends Component {
+  constructor(props, context) {
+    super(props);
+    this.state = {
+      username: '',
+      password: ''
+    };
+    this.handleLogin = this.handleLogin.bind(this);
+    this.handleUserNameChange = this.handleUserNameChange.bind(this);
+    this.handlePasswordChange = this.handlePasswordChange.bind(this);
+    this.input_username = React.createRef();
+    this.input_password = React.createRef();
+  };
+
+  componentDidMount() {
+  };
+
+  handleLogin() {
+    this.props.fetchToken(this.state.username, this.state.password);
+  };
+
+  handleUserNameChange(e) {
+    this.setState({ username: e.target.value });
+  };
+
+  handlePasswordChange(e) {
+    this.setState({ password: e.target.value });
+  };
+
   render() {
     return (
       <div className="app flex-row align-items-center">
@@ -20,7 +49,7 @@ class Login extends Component {
                             <i className="icon-user"></i>
                           </InputGroupText>
                         </InputGroupAddon>
-                        <Input type="text" placeholder="Username" autoComplete="username" />
+                        <Input type="text" placeholder="Username" autoComplete="username" ref={this.input_username} defaultValue={this.state.username} onChange={this.handleUserNameChange}/>
                       </InputGroup>
                       <InputGroup className="mb-4">
                         <InputGroupAddon addonType="prepend">
@@ -28,11 +57,11 @@ class Login extends Component {
                             <i className="icon-lock"></i>
                           </InputGroupText>
                         </InputGroupAddon>
-                        <Input type="password" placeholder="Password" autoComplete="current-password" />
+                        <Input type="password" placeholder="Password" autoComplete="current-password" ref={this.input_password} defaultValue={this.state.password} onChange={this.handlePasswordChange}/>
                       </InputGroup>
                       <Row>
                         <Col xs="6">
-                          <Button color="primary" className="px-4">Login</Button>
+                          <Button color="primary" className="px-4" onClick={this.handleLogin}>Login</Button>
                         </Col>
                         <Col xs="6" className="text-right">
                           <Button color="link" className="px-0">Forgot password?</Button>
@@ -60,4 +89,6 @@ class Login extends Component {
   }
 }
 
-export default Login;
+export default reduxForm({
+  form: 'Login'
+})(Login)
