@@ -1,4 +1,3 @@
-import React from 'react';
 import { connect } from 'react-redux';
 import { fetchUsers } from '../actions/action_user';
 import UsersForm from '../views/Users/Users';
@@ -10,7 +9,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => {
   return {
     // fetch token
-    fetchUsers: () => {
+    fetchUsers: (page, sizePerPage) => {
       dispatch(fetchUsers());
     }
   }

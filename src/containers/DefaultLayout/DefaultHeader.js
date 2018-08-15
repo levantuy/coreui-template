@@ -40,6 +40,11 @@ class DefaultHeader extends Component {
             </IndexLinkContainer>
           </NavItem>
           <NavItem className="px-3">
+            <IndexLinkContainer to="/users-gridview">
+              <NavLink href="#">Users gridview</NavLink>
+            </IndexLinkContainer>
+          </NavItem>
+          <NavItem className="px-3">
             <NavLink href="#">Settings</NavLink>
           </NavItem>
         </Nav>

@@ -1,5 +1,3 @@
-import React from 'react';
-import { Redirect } from 'react-router';
 import { connect } from 'react-redux';
 import { logout } from '../actions/action_auth';
 import LogoutForm from '../views/Pages/Logout/Logout';
