@@ -1,50 +1,50 @@
 // import jwtDecode from 'jwt-decode'
 import * as auth from '../actions/action_auth'
 
-
 const initialState = {
   access: undefined,
   refresh: undefined,
   errors: {},
 }
 
-export default (state=initialState, action) => {
-  switch(action.type) {
+export default (state = initialState, action) => {
+  switch (action.type) {
     case auth.LOGIN_SUCCESS:
       return {
         access: {
-          token: action.payload.Token, 
-          expiration: action.payload.Expiration
+          token: action.payload.token.Token,
+          expiration: action.payload.token.Expiration
         },
         refresh: {
-            token: action.payload.Token, 
-            expiration: action.payload.Expiration
+          token: action.payload.token.Token,
+          expiration: action.payload.token.Expiration
         },
         errors: {}
-    }
+      }
     case auth.TOKEN_RECEIVED:
       return {
         ...state,
         access: {
-            token: action.payload.Token, 
-            expiration: action.payload.Expiration
+          token: action.payload.token.Token,
+          expiration: action.payload.token.Expiration
         }
       }
+    case auth.LOGOUT_SUCCESS:
     case auth.LOGIN_FAILURE:
     case auth.TOKEN_FAILURE:
       return {
-         access: undefined,
-         refresh: undefined,
-         errors: {},
+        access: undefined,
+        refresh: undefined,
+        errors: {},
       }
     default:
       return state
-    }
+  }
 }
 
 export function accessToken(state) {
   if (state.access) {
-    return  state.access.token
+    return state.access.token
   }
 }
 
@@ -57,7 +57,7 @@ export function isAccessTokenExpired(state) {
 
 export function refreshToken(state) {
   if (state.refresh) {
-    return  state.refresh.token
+    return state.refresh.token
   }
 }
 
@@ -73,5 +73,5 @@ export function isAuthenticated(state) {
 }
 
 export function errors(state) {
-  return  state.errors
+  return state.errors
 }

@@ -1,8 +1,10 @@
 import { combineReducers } from 'redux';
 import auth, * as fromAuth from './reducer_auth';
+import user from './reducer_user';
 
 const rootReducer = combineReducers({  
-  authReducer: auth
+  authReducer: auth,
+  userReducer: user
 });
 export default rootReducer
 
@@ -16,6 +18,6 @@ export const authErrors = state => fromAuth.errors(state.authReducer)
 export function withAuth(headers={}) {
   return (state) => ({
     ...headers,
-    'x-access-token': `${accessToken(state)}`
+    'Authorization': `Bearer ${accessToken(state)}`
   })
 }

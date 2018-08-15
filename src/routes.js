@@ -173,7 +173,7 @@ const Widgets = Loadable({
 });
 
 const Users = Loadable({
-  loader: () => import('./views/Users/Users'),
+  loader: () => import('./pages/UserPage'),
   loading: Loading,
 });
 

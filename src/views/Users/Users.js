@@ -1,60 +1,84 @@
 import React, { Component } from 'react';
-import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap';
+import { Card, CardBody, CardHeader, Col, Row, Table, Badge } from 'reactstrap';
+import { reduxForm } from 'redux-form';
 
-import usersData from './UsersData'
+const getBadge = (Is_lock) => {
+  return Is_lock === true ? 'success' : 'Inactive' 
+}
 
-function UserRow(props) {
-  const user = props.user
-  const userLink = `#/users/${user.id}`
+class UserRow extends Component {
+  constructor(props) {
+      super(props);
+      this.state = {
+      };
+  }  
 
-  const getBadge = (status) => {
-    return status === 'Active' ? 'success' :
-      status === 'Inactive' ? 'secondary' :
-        status === 'Pending' ? 'warning' :
-          status === 'Banned' ? 'danger' :
-            'primary'
+  render() {
+      return (
+          <tr key={this.props.Id.toString()}>
+              <td>{this.props.Id}</td>
+              <td>{this.props.Fullname}</td>
+              <td>{this.props.User_name}</td>
+              <td>{this.props.Tel}</td>
+              <td>{this.props.Email}</td>
+              <td><Badge color={this.props.Is_lock === false ? "success" : "secondary"}>{this.props.Is_lock === false ? "Active" : "Inactive"}</Badge></td>
+          </tr>
+      )
   }
-
-  return (
-    <tr key={user.id.toString()}>
-        <th scope="row"><a href={userLink}>{user.id}</a></th>
-        <td><a href={userLink}>{user.name}</a></td>
-        <td>{user.registered}</td>
-        <td>{user.role}</td>
-        <td><Badge href={userLink} color={getBadge(user.status)}>{user.status}</Badge></td>
-    </tr>
-  )
 }
 
 class Users extends Component {
+  constructor(props, context) {
+    super(props);
+    this.state = {
+    };
+  };
+
+  componentDidMount() {
+    this.props.fetchUsers();
+  };
 
   render() {
+    const { users, user, loading, error } = this.props.userState;
+    if (users === 'undefined' || loading) {
+      return <div className="container"><h1>Posts</h1><h3>Loading...</h3></div>
+    } else if (error) {
+      return <div className="alert alert-danger">Error: {error.message}</div>
+    }
 
-    const userList = usersData.filter((user) => user.id < 10)
+    const userComponent = users.map((user) => (
+      <UserRow key={user.Id}
+        Id={user.Id}
+        Fullname={user.Fullname}
+        User_name={user.User_name}
+        Tel={user.Tel}
+        Email={user.Email}
+        Is_lock={user.Is_lock}
+      />
+    ));
 
     return (
       <div className="animated fadeIn">
         <Row>
-          <Col xl={6}>
+          <Col xl={12}>
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Users <small className="text-muted">example</small>
+                <i className="fa fa-align-justify"></i> Users example
               </CardHeader>
               <CardBody>
                 <Table responsive hover>
                   <thead>
                     <tr>
-                      <th scope="col">id</th>
-                      <th scope="col">name</th>
-                      <th scope="col">registered</th>
-                      <th scope="col">role</th>
-                      <th scope="col">status</th>
+                      <th scope="col">Id</th>
+                      <th scope="col">Fullname</th>
+                      <th scope="col">Username</th>
+                      <th scope="col">Tel</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Is lock</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {userList.map((user, index) =>
-                      <UserRow key={index} user={user}/>
-                    )}
+                    {userComponent}
                   </tbody>
                 </Table>
               </CardBody>
@@ -62,8 +86,8 @@ class Users extends Component {
           </Col>
         </Row>
       </div>
-    )
+    );
   }
 }
 
-export default Users;
+export default reduxForm({ form: 'Users' })(Users)

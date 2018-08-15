@@ -18,6 +18,7 @@ import { DefaultLayout } from './containers';
 // Pages
 import { Page404, Page500, Register } from './views/Pages';
 import Login from './pages/LoginPage';
+import LogoutPage from './pages/LogoutPage';
 import { Provider } from 'react-redux'
 import AuthorizedRoute from './AuthorizedRoute';
 import configureStore from './store/configureStore.js';
@@ -32,7 +33,8 @@ class App extends Component {
         <BrowserRouter>
           <div>
             <Switch>
-              <Route exact path="/login" name="Login Page" component={Login} />
+              <Route exact path="/login"  name="Login Page" component={Login} />
+              <Route exact path="/logout" name="Logout Page" component={LogoutPage} />
               <Route exact path="/register" name="Register Page" component={Register} />
               <Route exact path="/404" name="Page 404" component={Page404} />
               <Route exact path="/500" name="Page 500" component={Page500} />

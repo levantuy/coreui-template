@@ -30,12 +30,14 @@ class DefaultHeader extends Component {
 
         <Nav className="d-md-down-none" navbar>
           <NavItem className="px-3">
-          <IndexLinkContainer to="/app">
-            <NavLink href="/dashboard">Dashboard</NavLink>
-          </IndexLinkContainer>            
+            <IndexLinkContainer to="/dashboard">
+              <NavLink href="/dashboard">Dashboard</NavLink>
+            </IndexLinkContainer>
           </NavItem>
           <NavItem className="px-3">
-            <NavLink href="#/users">Users</NavLink>
+            <IndexLinkContainer to="/users">
+              <NavLink href="/users">Users</NavLink>
+            </IndexLinkContainer>
           </NavItem>
           <NavItem className="px-3">
             <NavLink href="#">Settings</NavLink>
@@ -68,7 +70,9 @@ class DefaultHeader extends Component {
               <DropdownItem><i className="fa fa-file"></i> Projects<Badge color="primary">42</Badge></DropdownItem>
               <DropdownItem divider />
               <DropdownItem><i className="fa fa-shield"></i> Lock Account</DropdownItem>
-              <DropdownItem><i className="fa fa-lock"></i> Logout</DropdownItem>
+              <IndexLinkContainer to="/logout">
+                <DropdownItem href="#"><i className="fa fa-lock"></i> Logout</DropdownItem>
+              </IndexLinkContainer>
             </DropdownMenu>
           </AppHeaderDropdown>
         </Nav>
