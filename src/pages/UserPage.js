@@ -10,7 +10,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     // fetch token
     fetchUsers: (page, sizePerPage) => {
-      dispatch(fetchUsers());
+      dispatch(fetchUsers(page, sizePerPage));
     }
   }
 }

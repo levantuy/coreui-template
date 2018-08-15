@@ -1,30 +1,77 @@
 import React, { Component } from 'react';
 import { reduxForm } from 'redux-form';
-import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
+import BootstrapTable from 'react-bootstrap-table-next';
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+import paginationFactory from 'react-bootstrap-table2-paginator';
+import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
+import PropTypes from 'prop-types';
+
+const columns = [{
+  dataField: 'Id',
+  text: 'Product ID'
+}, {
+  dataField: 'Fullname',
+  text: 'Full Name',
+  filter: textFilter()
+}, {
+  dataField: 'User_name',
+  text: 'User Name',
+  filter: textFilter()
+}, {
+  dataField: 'Tel',
+  text: 'Tel',
+  filter: textFilter()
+}, {
+  dataField: 'Email',
+  text: 'Email',
+  filter: textFilter()
+}, {
+  dataField: 'Is_lock',
+  text: 'Is_lock'
+}];
+
+const RemotePagination = ({ data, page, sizePerPage, onTableChange, totalSize }) => (
+  <div>
+    <BootstrapTable
+      remote={ { pagination: true } }
+      keyField="Id"
+      striped
+      hover
+      condensed
+      data={data}
+      columns={columns}
+      pagination={paginationFactory({ page, sizePerPage, totalSize })}
+      filter={ filterFactory() }
+      onTableChange={onTableChange}
+    />
+  </div>
+);
+
+RemotePagination.propTypes = {
+  data: PropTypes.array.isRequired,
+  page: PropTypes.number.isRequired,
+  totalSize: PropTypes.number.isRequired,
+  sizePerPage: PropTypes.number.isRequired,
+  onTableChange: PropTypes.func.isRequired
+};
 
 class Users extends Component {
   constructor(props) {
-    super(props);    
-    this.fetchData = this.fetchData.bind(this);
-    this.handlePageChange = this.handlePageChange.bind(this);
-    this.handleSizePerPageChange = this.handleSizePerPageChange.bind(this);
+    super(props);
+    this.handleTableChange = this.handleTableChange.bind(this);
   };
 
   componentDidMount() {
-    this.props.fetchUsers();
+    this.props.fetchUsers(1, 10);
   };
 
-  fetchData(page = this.state.page, sizePerPage = this.state.sizePerPage) {
+  handleTableChange = (type, { page, sizePerPage, filters }) => {    
+    // const filter_values = [];
+    // for (const dataField in filters) {
+    //   const { filterVal, filterType, comparator } = filters[dataField];
+    //   filter_values.push({dataField: dataField, filterVal: filterVal, filterType: filterType, comparator: comparator})
+    // }
     this.props.fetchUsers(page, sizePerPage);
-  };
-
-  handlePageChange(page, sizePerPage) {
-    this.fetchData(page, sizePerPage);
-  };
-
-  handleSizePerPageChange(sizePerPage) {
-    // When changing the size per page always navigating to the first page
-    this.fetchData(1, sizePerPage);
   };
 
   render() {
@@ -35,31 +82,14 @@ class Users extends Component {
       return <div className="alert alert-danger">Error: {error.message}</div>
     }
 
-    const options = {
-      onPageChange: this.handlePageChange,
-      onSizePerPageList: this.handleSizePerPageChange,
-      page: page,
-      sizePerPage: sizePerPage,
-    };
-
     return (
-       <BootstrapTable version='4'
+      <RemotePagination
         data={users}
-        options={options}
-        fetchInfo={{dataTotalSize: totalSize}}
-        remote
-        pagination
-        striped
-        hover
-        condensed
-      >
-        <TableHeaderColumn dataField="Id" isKey dataAlign="center">Id</TableHeaderColumn>
-        <TableHeaderColumn dataField="Fullname" dataAlign="center">Fullname</TableHeaderColumn>
-        <TableHeaderColumn dataField="User_name" dataAlign="center">User_name</TableHeaderColumn>
-        <TableHeaderColumn dataField="Tel" dataAlign="center">Tel</TableHeaderColumn>
-        <TableHeaderColumn dataField="Email" dataAlign="center">Email</TableHeaderColumn>
-        <TableHeaderColumn dataField="Is_lock" dataAlign="center">Is lock</TableHeaderColumn>
-      </BootstrapTable>
+        page={page}
+        sizePerPage={sizePerPage}
+        totalSize={totalSize}
+        onTableChange={this.handleTableChange}
+      />
     );
   }
 }

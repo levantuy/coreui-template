@@ -7,9 +7,9 @@ export const FETCH_USERS = 'FETCH_USERS';
 export const FETCH_USERS_SUCCESS = 'FETCH_USERS_SUCCESS';
 export const FETCH_USERS_FAILURE = 'FETCH_USERS_FAILURE';
 
-export const fetchUsers = () => ({
+export const fetchUsers = (pageIndex, pageSize) => ({
   [RSAA]: {
-    endpoint: `${API_ROOT}/users`,    
+    endpoint: `${API_ROOT}/users/filter?pageIndex=${pageIndex}&pageSize=${pageSize}`,    
     method: 'GET',
     headers: withAuth({ 'Content-Type': 'application/json' }),
     types: [

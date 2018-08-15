@@ -1,76 +1,96 @@
-import React, {Component} from 'react';
-import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
+import React, { Component } from 'react';
+import BootstrapTable from 'react-bootstrap-table-next';
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import _ from 'lodash';
+import filterFactory, { textFilter, Comparator } from 'react-bootstrap-table2-filter';
 
-const dataTable = _.range(1, 600).map(x => ({id: x, name: `Name ${x}`, surname: `Surname ${x}`}));
+const dataTable = _.range(1, 60).map(x => ({ id: x, name: `Name ${x}`, surname: `Surname ${x}` }));
 
 // Simulates the call to the server to get the data
 const fakeDataFetcher = {
   fetch(page, size) {
     return new Promise((resolve, reject) => {
-      resolve({items: _.slice(dataTable, (page-1)*size, ((page-1)*size) + size), total: dataTable.length});
+      resolve({ items: _.slice(dataTable, (page - 1) * size, ((page - 1) * size) + size), total: dataTable.length });
     });
   }
 };
 
+const columns = [{
+  dataField: 'id',
+  text: 'Product ID'
+}, {
+  dataField: 'name',
+  text: 'Full Name',
+  filter: textFilter()
+}, {
+  dataField: 'surname',
+  text: 'User Name',
+  filter: textFilter()
+}];
+
+const RemoteFilter = props => (
+  <div>
+    <BootstrapTable
+      remote={{ filter: true }}
+      keyField="id"
+      data={props.data}
+      columns={columns}
+      filter={filterFactory()}
+      onTableChange={props.onTableChange}
+    />
+  </div>
+);
+
 class UserGridview extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
-      items: [],
-      totalSize: 0,
-      page: 1,
-      sizePerPage: 10,
+      products:[],
+      data:[]
     };
-    this.fetchData = this.fetchData.bind(this);
-    this.handlePageChange = this.handlePageChange.bind(this);
-    this.handleSizePerPageChange = this.handleSizePerPageChange.bind(this);
-  }
+  }  
 
   componentDidMount() {
     this.fetchData();
   }
 
-  fetchData(page = this.state.page, sizePerPage = this.state.sizePerPage) {
+  fetchData(page = 1, sizePerPage = 60) {
     fakeDataFetcher.fetch(page, sizePerPage)
       .then(data => {
-        this.setState({items: data.items, totalSize: data.total, page, sizePerPage});
+        this.setState({products: data.items, data: data.items});
       });
   }
 
-  handlePageChange(page, sizePerPage) {
-    this.fetchData(page, sizePerPage);
-  }
+  handleTableChange = (type, { filters }) => {
+    setTimeout(() => {
+      const result = this.state.products.filter((row) => {
+        let valid = true;
+        for (const dataField in filters) {
+          const { filterVal, filterType, comparator } = filters[dataField];
 
-  handleSizePerPageChange(sizePerPage) {
-    // When changing the size per page always navigating to the first page
-    this.fetchData(1, sizePerPage);
+          if (filterType === 'TEXT') {
+            if (comparator === Comparator.LIKE) {
+              valid = row[dataField].toString().indexOf(filterVal) > -1;
+            } else {
+              valid = row[dataField] === filterVal;
+            }
+          }
+          if (!valid) break;
+        }
+        return valid;
+      });
+      this.setState(() => ({
+        data: result
+      }));
+    }, 2000);    
   }
 
   render() {
-    const options = {
-      onPageChange: this.handlePageChange,
-      onSizePerPageList: this.handleSizePerPageChange,
-      page: this.state.page,
-      sizePerPage: this.state.sizePerPage,
-    };
-
     return (
-       <BootstrapTable
-        data={this.state.items}
-        options={options}
-        fetchInfo={{dataTotalSize: this.state.totalSize}}
-        remote
-        pagination
-        striped
-        hover
-        condensed
-      >
-        <TableHeaderColumn dataField="id" isKey dataAlign="center">Id</TableHeaderColumn>
-        <TableHeaderColumn dataField="name" dataAlign="center">Name</TableHeaderColumn>
-        <TableHeaderColumn dataField="surname" dataAlign="center">Surname</TableHeaderColumn>
-      </BootstrapTable>
+      <RemoteFilter
+        data={this.state.data}
+        onTableChange={this.handleTableChange}
+      />
     );
   }
 }
