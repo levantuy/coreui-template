@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 
 const columns = [{
   dataField: 'Id',
-  text: 'Product ID'
+  text: 'User Id'
 }, {
   dataField: 'Fullname',
   text: 'Full Name',
@@ -27,13 +27,13 @@ const columns = [{
   filter: textFilter()
 }, {
   dataField: 'Is_lock',
-  text: 'Is_lock'
+  text: 'Is Lock'
 }];
 
 const RemotePagination = ({ data, page, sizePerPage, onTableChange, totalSize }) => (
   <div>
     <BootstrapTable
-      remote={ { pagination: true } }
+      remote={ { pagination: true, filter: true } }
       keyField="Id"
       striped
       hover
@@ -58,36 +58,66 @@ RemotePagination.propTypes = {
 class Users extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      data: [],
+      loading: true, 
+      error: {}, 
+      totalSize: 0, 
+      page: 1, 
+      sizePerPage: 10
+    };
     this.handleTableChange = this.handleTableChange.bind(this);
   };
 
   componentDidMount() {
     this.props.fetchUsers(1, 10);
+    // set state
+    setTimeout(() => {
+      if (this.props.userState.users) {
+        const { users, user, loading, error, totalSize, page, sizePerPage } = this.props.userState;
+        this.setState(() => ({
+          data: users,
+          loading: loading,
+          error: error,
+          totalSize: totalSize,
+          page: page,
+          sizePerPage: sizePerPage
+        }));
+      }
+    }, 1000);    
   };
 
   handleTableChange = (type, { page, sizePerPage, filters }) => {    
-    // const filter_values = [];
-    // for (const dataField in filters) {
-    //   const { filterVal, filterType, comparator } = filters[dataField];
-    //   filter_values.push({dataField: dataField, filterVal: filterVal, filterType: filterType, comparator: comparator})
-    // }
     this.props.fetchUsers(page, sizePerPage);
+    // set state
+    setTimeout(() => {
+      if (this.props.userState.users) {
+        const { users, user, loading, error, totalSize, page, sizePerPage } = this.props.userState;
+        this.setState(() => ({
+          data: users,
+          loading: loading,
+          error: error,
+          totalSize: totalSize,
+          page: page,
+          sizePerPage: sizePerPage
+        }));
+      }
+    }, 500);    
   };
 
-  render() {
-    const { users, user, loading, error, totalSize, page, sizePerPage } = this.props.userState;
-    if (users === 'undefined' || loading) {
+  render() {    
+    if (this.state.data === 'undefined' || this.state.loading) {
       return <div className="container"><h1>Posts</h1><h3>Loading...</h3></div>
-    } else if (error) {
-      return <div className="alert alert-danger">Error: {error.message}</div>
+    } else if (this.state.error) {
+      return <div className="alert alert-danger">Error: {this.state.error.message}</div>
     }
 
     return (
       <RemotePagination
-        data={users}
-        page={page}
-        sizePerPage={sizePerPage}
-        totalSize={totalSize}
+        data={this.state.data}
+        page={this.state.page}
+        sizePerPage={this.state.sizePerPage}
+        totalSize={this.state.totalSize}
         onTableChange={this.handleTableChange}
       />
     );

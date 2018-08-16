@@ -3,6 +3,8 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import _ from 'lodash';
 import filterFactory, { textFilter, Comparator } from 'react-bootstrap-table2-filter';
+import { connect } from 'react-redux';
+import { fetchUsers } from '../../actions/action_user';
 
 const dataTable = _.range(1, 60).map(x => ({ id: x, name: `Name ${x}`, surname: `Surname ${x}` }));
 
@@ -45,10 +47,10 @@ class UserGridview extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      products:[],
-      data:[]
+      products: [],
+      data: []
     };
-  }  
+  }
 
   componentDidMount() {
     this.fetchData();
@@ -57,35 +59,27 @@ class UserGridview extends Component {
   fetchData(page = 1, sizePerPage = 60) {
     fakeDataFetcher.fetch(page, sizePerPage)
       .then(data => {
-        this.setState({products: data.items, data: data.items});
+        this.setState({ products: data.items, data: data.items });
       });
   }
 
   handleTableChange = (type, { filters }) => {
-    setTimeout(() => {
-      const result = this.state.products.filter((row) => {
-        let valid = true;
-        for (const dataField in filters) {
-          const { filterVal, filterType, comparator } = filters[dataField];
+    this.props.fetchUsers(1, 100);
 
-          if (filterType === 'TEXT') {
-            if (comparator === Comparator.LIKE) {
-              valid = row[dataField].toString().indexOf(filterVal) > -1;
-            } else {
-              valid = row[dataField] === filterVal;
-            }
-          }
-          if (!valid) break;
-        }
-        return valid;
-      });
-      this.setState(() => ({
-        data: result
-      }));
-    }, 2000);    
+    setTimeout(() => {
+      if (this.props.userState.users) {
+        this.setState(() => ({
+          data: this.props.userState.users
+        }));
+      }
+    }, 2000);
   }
 
   render() {
+    if (this.state.data === 'undefined') {
+      return <div className="container"><h1>Posts</h1><h3>Loading...</h3></div>
+    }
+
     return (
       <RemoteFilter
         data={this.state.data}
@@ -95,4 +89,17 @@ class UserGridview extends Component {
   }
 }
 
-export default UserGridview;
+const mapStateToProps = (state) => ({
+  userState: state.userReducer.userState
+})
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    // fetch token
+    fetchUsers: (page, sizePerPage) => {
+      dispatch(fetchUsers(page, sizePerPage));
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserGridview);
