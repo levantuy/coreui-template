@@ -1,6 +1,6 @@
 import { isRSAA, apiMiddleware } from 'redux-api-middleware';
-import { TOKEN_RECEIVED, refreshAccessToken } from './actions/action_auth'
-import { refreshToken, isAccessTokenExpired } from './reducers/reducer_auth'
+import { TOKEN_RECEIVED, refreshAccessToken } from '../actions/action_auth'
+import { refreshToken, isAccessTokenExpired } from '../reducers/reducer_auth'
 
 export function createApiMiddleware() {
   let postponedRSAAs = []

@@ -20,7 +20,7 @@ import { Page404, Page500, Register } from './views/Pages';
 import Login from './pages/LoginPage';
 import LogoutPage from './pages/LogoutPage';
 import { Provider } from 'react-redux'
-import AuthorizedRoute from './AuthorizedRoute';
+import AuthorizedRoute from './utils/AuthorizedRoute';
 import configureStore from './store/configureStore.js';
 const store = configureStore();
 

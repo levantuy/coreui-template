@@ -1,6 +1,6 @@
 import { RSAA } from 'redux-api-middleware';
 import { withAuth } from '../reducers'
-import { API_ROOT } from '../api-config';
+import { API_ROOT } from '../utils/api-config';
 // login
 export const LOGIN_REQUEST = '@@jwt/LOGIN_REQUEST';
 export const LOGIN_SUCCESS = '@@jwt/LOGIN_SUCCESS';
