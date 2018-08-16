@@ -1,5 +1,4 @@
 import { logout } from '../actions/action_auth';
-import { push } from 'react-router-redux';
 
 export default store => next => action => {
 
@@ -17,10 +16,10 @@ export default store => next => action => {
         } else if (action.payload.status === 401) {
             var errorMsg = 'Your session has expired. Please login again.'
             store.dispatch(logout())
-        } else if (action.payload.status === 404) {
-            store.dispatch(puhs('/404'))
+        } else if (action.payload.name === "RequestError") {
+            window.location.href= "/404";            
         } else if (action.payload.status === 500) {
-            store.dispatch(push('/500'))
+            window.location.href= "/500";
         }
     } else {
         // So the middleware doesn't get applied to every single action
