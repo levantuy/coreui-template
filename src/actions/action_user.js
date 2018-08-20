@@ -1,6 +1,6 @@
 import { CALL_API  } from 'redux-api-middleware';
 import { withAuth } from '../reducers';
-import { API_ROOT } from '../utils/api-config';
+import { api_url } from '../utils/api-config';
 
 //users
 export const FETCH_USERS = 'FETCH_USERS';
@@ -13,7 +13,7 @@ export function fetchUsers(pageIndex, pageSize) {
     [CALL_API]: {
       method: 'GET',
       headers: withAuth({ 'Content-Type': 'application/json' }),
-      endpoint: `${API_ROOT}/users/filter?pageIndex=${pageIndex}&pageSize=${pageSize}`,    
+      endpoint: `${api_url}/users/filter?pageIndex=${pageIndex}&pageSize=${pageSize}`,    
       types: [
         FETCH_USERS,
         FETCH_USERS_SUCCESS,

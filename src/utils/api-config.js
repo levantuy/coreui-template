@@ -13,4 +13,6 @@ if(hostname === 'realsite.com') {
   backendHost = process.env.REACT_APP_BACKEND_HOST || 'http://localhost:63260';
 }
 
-export const API_ROOT = `${backendHost}/api/${apiVersion}`;
+export const api_url = `${backendHost}/api/${apiVersion}`;
+
+export const page_size_default = 10;

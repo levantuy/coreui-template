@@ -4,9 +4,8 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import _ from 'lodash';
 import filterFactory, { textFilter, Comparator } from 'react-bootstrap-table2-filter';
 import { connect } from 'react-redux';
-import { fetchUsers } from '../../actions/action_user';
-import { withAuth } from '../../reducers';
-import { API_ROOT } from '../../utils/api-config';
+import { fetchUsers } from '../../actions/action_user_group';
+import { api_url, page_size_default } from '../../utils/api-config';
 import axios from 'axios';
 
 const dataTable = _.range(1, 60).map(x => ({ id: x, name: `Name ${x}`, surname: `Surname ${x}` }));
@@ -61,29 +60,34 @@ class UserGridview extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      products: [],
       data: [],
-      token: ''
+      loading: true,
+      error: {},
+      totalSize: 0,
+      page: 1,
+      sizePerPage: 10,
+      token: 'Bearer '.concat(this.props.token)
     };
     this.fetchData = this.fetchData.bind(this);
     this.handleTableChange = this.handleTableChange.bind(this);
   }
 
   componentDidMount() {
-    this.fetchData(1, 10);
+    this.fetchData(1, page_size_default);
   }
 
-  fetchData(page = 1, sizePerPage = 60) {
-    const AuthStr = 'Bearer '.concat(this.props.token);
-    axios.get(`${API_ROOT}/users/filter?pageIndex=${1}&pageSize=${10}`, { headers: { Authorization: AuthStr } }).then(response => {
+  fetchData(page = 1, sizePerPage = 10) {
+    axios.get(`${api_url}/users/filter?pageIndex=${1}&pageSize=${page_size_default}`, { headers: { Authorization: this.state.token } }).then(response => {
       // If request is good...
-      console.log(response.data);
       this.setState(() => ({
-        data: response.data.users
+        data: response.data.users,
+        page: response.data.page,
+        totalSize: response.data.totalSize,        
+        sizePerPage: response.data.sizePerPage   
       }));
     })
       .catch((error) => {
-        console.log('error 3 ' + error);
+        console.log('Message error: ' + error);
       });
   }
 
@@ -93,7 +97,7 @@ class UserGridview extends Component {
 
   render() {
 
-    if (this.state.data === 'undefined') {
+    if (!this.state.data) {
       return <div className="container"><h1>Posts</h1><h3>Loading...</h3></div>
     }
 
@@ -107,7 +111,6 @@ class UserGridview extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  userState: state.userReducer.userState,
   token: state.authReducer.access.token
 })
 

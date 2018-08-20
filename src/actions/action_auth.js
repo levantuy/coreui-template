@@ -1,6 +1,6 @@
 import { RSAA } from 'redux-api-middleware';
 import { withAuth } from '../reducers'
-import { API_ROOT } from '../utils/api-config';
+import { api_url } from '../utils/api-config';
 // login
 export const LOGIN_REQUEST = '@@jwt/LOGIN_REQUEST';
 export const LOGIN_SUCCESS = '@@jwt/LOGIN_SUCCESS';
@@ -16,7 +16,7 @@ export const LOGOUT_FAILURE = '@@jwt/LOGOUT_FAILURE';
 
 export const fetchToken = (username, password) => ({
     [RSAA]: {
-        endpoint: `${API_ROOT}/accounts`,
+        endpoint: `${api_url}/accounts`,
         method: 'POST',
         body: JSON.stringify({UserName: username, Password: password}),
         headers: { 'Content-Type': 'application/json' },
@@ -28,7 +28,7 @@ export const fetchToken = (username, password) => ({
 
 export const logout = () => ({
     [RSAA]: {
-        endpoint: `${API_ROOT}/accounts/logout`,
+        endpoint: `${api_url}/accounts/logout`,
         method: 'GET',
         headers: withAuth({ 'Content-Type': 'application/json' }),
         types: [
@@ -39,7 +39,7 @@ export const logout = () => ({
 
 export const refreshAccessToken = (token) => ({
     [RSAA]: {
-        endpoint: `${API_ROOT}/accounts`,
+        endpoint: `${api_url}/accounts`,
         method: 'POST',
         body: JSON.stringify({UserName: 'admin', Password: '123456'}),
         headers: { 'Content-Type': 'application/json' },
