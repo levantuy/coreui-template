@@ -56,7 +56,7 @@ class Users extends Component {
     this.state = {
       data: [],
       error: {},
-      totalSize: 0,
+      totalSize: 10,
       page: 1,
       sizePerPage: 10
     };
@@ -68,9 +68,10 @@ class Users extends Component {
     this.fetchData(1, page_size_default);
   }
 
-  fetchData(page = 1, sizePerPage = 10) {
+  fetchData(page = 1, sizePerPage = 10, fullname = '', user_name = '', tel = '', email = '') {
     var token = 'Bearer '.concat(this.props.token);
-    axios.get(`${api_url}/users/filter?pageIndex=${page}&pageSize=${sizePerPage}`, { headers: { Authorization: token } }).then(response => {
+    axios.get(`${api_url}/users/filter?pageIndex=${page}&pageSize=${sizePerPage}&fullname=${fullname}&user_name=${user_name}&tel=${tel}&email=${email}`, 
+      { headers: { Authorization: token } }).then(response => {
       // If request is good...
       if (response.data.users)
         this.setState(() => ({
@@ -86,7 +87,30 @@ class Users extends Component {
   }
 
   handleTableChange = (type, { page, sizePerPage, filters }) => {
-    this.fetchData(page, sizePerPage);
+    var fullname = '', user_name = '', tel = '', email = ''; 
+    for (const dataField in filters) {
+      const { filterVal, filterType, comparator } = filters[dataField];
+
+      if (filterType === 'TEXT') {
+        if (comparator === Comparator.LIKE) {
+          switch (dataField) {
+            case 'Fullname':
+              fullname = filterVal;
+              break;
+            case 'User_name':
+              user_name = filterVal;
+              break;
+            case 'Tel':
+              tel = filterVal;
+              break;
+            case 'Email':
+              email = filterVal;
+              break;
+          }
+        } 
+      }
+    }
+    this.fetchData(page, sizePerPage, fullname, user_name, tel, email);
   }
 
   render() {

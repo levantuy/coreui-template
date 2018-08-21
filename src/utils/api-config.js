@@ -49,7 +49,7 @@ export const optionsGridview = {
   // show column type checkbox
   checkboxFormatter(cell, row) {  
     return (
-      <input type="checkbox" value={cell}></input>
+      <input type="checkbox" checked={cell}></input>
     );
   }
 }
