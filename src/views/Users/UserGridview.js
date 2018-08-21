@@ -3,10 +3,9 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import _ from 'lodash';
 import filterFactory, { textFilter, Comparator } from 'react-bootstrap-table2-filter';
+import paginationFactory from 'react-bootstrap-table2-paginator';
 import { connect } from 'react-redux';
-import { fetchUsers } from '../../actions/action_user_group';
-import { api_url, page_size_default } from '../../utils/api-config';
-import axios from 'axios';
+import { fetchUsers } from '../../actions/action_user';
 
 const dataTable = _.range(1, 60).map(x => ({ id: x, name: `Name ${x}`, surname: `Surname ${x}` }));
 
@@ -20,37 +19,27 @@ const fakeDataFetcher = {
 };
 
 const columns = [{
-  dataField: 'Id',
-  text: 'User Id'
+  dataField: 'id',
+  text: 'Product ID'
 }, {
-  dataField: 'Fullname',
+  dataField: 'name',
   text: 'Full Name',
   filter: textFilter()
 }, {
-  dataField: 'User_name',
+  dataField: 'surname',
   text: 'User Name',
   filter: textFilter()
-}, {
-  dataField: 'Tel',
-  text: 'Tel',
-  filter: textFilter()
-}, {
-  dataField: 'Email',
-  text: 'Email',
-  filter: textFilter()
-}, {
-  dataField: 'Is_lock',
-  text: 'Is Lock'
 }];
 
 const RemoteFilter = props => (
   <div>
     <BootstrapTable
       remote={{ filter: true }}
-      keyField="Id"
+      keyField="id"
       data={props.data}
       columns={columns}
       filter={filterFactory()}
+      pagination={paginationFactory(props.page, props.sizePerPage, props.totalSize)}
       onTableChange={props.onTableChange}
     />
   </div>
@@ -60,50 +49,48 @@ class UserGridview extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      products: [],
       data: [],
-      loading: true,
-      error: {},
       totalSize: 0,
       page: 1,
-      sizePerPage: 10,
-      token: 'Bearer '.concat(this.props.token)
+      sizePerPage: 10
     };
-    this.fetchData = this.fetchData.bind(this);
-    this.handleTableChange = this.handleTableChange.bind(this);
   }
 
   componentDidMount() {
-    this.fetchData(1, page_size_default);
+    this.fetchData();
   }
 
-  fetchData(page = 1, sizePerPage = 10) {
-    axios.get(`${api_url}/users/filter?pageIndex=${1}&pageSize=${page_size_default}`, { headers: { Authorization: this.state.token } }).then(response => {
-      // If request is good...
-      this.setState(() => ({
-        data: response.data.users,
-        page: response.data.page,
-        totalSize: response.data.totalSize,        
-        sizePerPage: response.data.sizePerPage   
-      }));
-    })
-      .catch((error) => {
-        console.log('Message error: ' + error);
+  fetchData(page = 1, sizePerPage = 60) {
+    fakeDataFetcher.fetch(page, sizePerPage)
+      .then(data => {
+        this.setState({ products: data.items, data: data.items });
       });
   }
 
-  handleTableChange = (type, { page, sizePerPage, filters }) => {
-    this.fetchData(page, sizePerPage);
+  handleTableChange = (type, { filters }) => {
+    this.props.fetchUsers(1, 100);
+
+    setTimeout(() => {
+      if (this.props.userState.users) {
+        this.setState(() => ({
+          data: this.props.userState.users
+        }));
+      }
+    }, 2000);
   }
 
   render() {
-
-    if (!this.state.data) {
+    if (this.state.data === 'undefined') {
       return <div className="container"><h1>Posts</h1><h3>Loading...</h3></div>
     }
 
     return (
       <RemoteFilter
         data={this.state.data}
+        page={this.page}
+        totalSize={this.totalSize}
+        sizePerPage={this.sizePerPage}
         onTableChange={this.handleTableChange}
       />
     );
@@ -111,7 +98,7 @@ class UserGridview extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  token: state.authReducer.access.token
+  userState: state.userReducer.userState
 })
 
 const mapDispatchToProps = (dispatch) => {

@@ -1,1 +1,25 @@
 // Here you can add other styles
+.dropdown-menu>li {
+    font-size: 14px;    
+    list-style: none;
+    position: relative;
+    padding: 0px 0px;
+    border-bottom: none;
+    text-decoration: none;
+}
+.dropdown-menu>li>a {
+    display: block;
+    padding: 3px 0px 3px 10px;
+    clear: both;
+    font-weight: normal;
+    line-height: normal;
+    color: #333;
+    white-space: nowrap;
+}
+.react-bootstrap-table-page-btns-ul {
+    float: right;
+    margin-top: 0px; }
+  
+  .react-bootstrap-table-pagination-list-hidden {
+    display: none; }
+  
