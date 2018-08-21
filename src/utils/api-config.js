@@ -45,5 +45,11 @@ export const optionsGridview = {
         text: 'All', value: totalSize
       }] // A numeric array is also available. the purpose of above example is custom the text
     }
+  },
+  // show column type checkbox
+  checkboxFormatter(cell, row) {  
+    return (
+      <input type="checkbox" value={cell}></input>
+    );
   }
 }

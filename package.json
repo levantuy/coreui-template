@@ -49,7 +49,6 @@
     "redux-api-middleware": "^2.3.0",
     "redux-form": "^7.4.2",
     "redux-promise": "^0.6.0",
-    "redux-thunk": "^2.3.0",
     "simple-line-icons": "^2.4.1"
   },
   "devDependencies": {

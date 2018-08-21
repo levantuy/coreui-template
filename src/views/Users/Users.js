@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { reduxForm } from 'redux-form';
 import BootstrapTable from 'react-bootstrap-table-next';
-import cellEditFactory, {Type} from 'react-bootstrap-table2-editor';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import filterFactory, { textFilter, Comparator } from 'react-bootstrap-table2-filter';
@@ -30,11 +29,8 @@ const columns = [{
   filter: textFilter()
 }, {
   dataField: 'Is_lock',
-  text: 'Is Lock',
-  editor: {
-    type: Type.CHECKBOX,
-    value: 'Y:N'
-  }
+  text: 'Is_lock',
+  formatter: optionsGridview.checkboxFormatter
 }];
 
 const RemoteFilter = props => (
@@ -44,10 +40,12 @@ const RemoteFilter = props => (
       keyField="Id"
       data={props.data}
       columns={columns}
-      cellEdit={cellEditFactory({ mode: 'click' })} 
       filter={filterFactory()}
       pagination={paginationFactory(optionsGridview.options(props.page, props.sizePerPage, props.totalSize))}
       onTableChange={props.onTableChange}
+      striped
+      hover
+      condensed
     />
   </div>
 );
