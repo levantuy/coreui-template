@@ -8,7 +8,9 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import { api_url, page_size_default, optionsGridview } from '../../utils/api-config';
 import axios from 'axios';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Input, Label, Row, Col, FormGroup } from 'reactstrap';
-
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import moment from 'moment';
 
 class Users extends Component {
   constructor(props) {
@@ -28,7 +30,7 @@ class Users extends Component {
       password_answer: '',
       tel: '',
       email: '',
-      birthday: new Date(),
+      birthday: moment(),
       is_approved: false,
       is_locked: false
       // end user information
@@ -94,7 +96,21 @@ class Users extends Component {
   }
 
   handleAdd() {
-    this.setState({ large: true });
+    this.setState({ 
+      large: true,
+      // user information
+      id: 0,
+      fullname: '',
+      username: '',
+      password_question: '',
+      password_answer: '',
+      tel: '',
+      email: '',
+      birthday: moment(),
+      is_approved: false,
+      is_locked: false
+      // end user information
+     });
   }
 
   handleExport() {
@@ -105,21 +121,21 @@ class Users extends Component {
     this.setState({ large: true });
     var token = 'Bearer '.concat(this.props.token);
     axios.get(`${api_url}/users/${row.Id}`,
-      { headers: { Authorization: token } }).then(response => {        
+      { headers: { Authorization: token } }).then(response => {
         if (response.data.user)
           this.setState(() => ({
-             // user information
-             id: response.data.user.Id,
-             fullname: response.data.user.Fullname,
-             username: response.data.user.User_name,
-             password_question: response.data.user.Password_question,
-             password_answer: response.data.user.Password_answer,
-             tel: response.data.user.Tel,
-             email: response.data.user.Email,
-             birthday: new Date(response.data.user.Birthday.concat('Z')),
-             is_approved: response.data.user.Is_approved,
-             is_locked: response.data.user.Is_locked,
-             // end user information
+            // user information
+            id: response.data.user.Id,
+            fullname: response.data.user.Fullname,
+            username: response.data.user.User_name,
+            password_question: response.data.user.Password_question,
+            password_answer: response.data.user.Password_answer,
+            tel: response.data.user.Tel,
+            email: response.data.user.Email,
+            birthday: response.data.user.Birthday,
+            is_approved: response.data.user.Is_approved,
+            is_locked: response.data.user.Is_locked,
+            // end user information
           }));
       })
       .catch((error) => {
@@ -156,18 +172,6 @@ class Users extends Component {
           // If request is good...
           if (response.data.user)
             this.setState(() => ({
-              // user information
-              id: response.data.user.Id,
-              fullname: response.data.user.Fullname,
-              username: response.data.user.User_name,
-              password_question: response.data.user.Password_question,
-              password_answer: response.data.user.Password_answer,
-              tel: response.data.user.Tel,
-              email: response.data.user.Email,
-              birthday: response.data.user.Birthday,
-              is_approved: response.data.user.Is_approved,
-              is_locked: response.data.user.Is_locked,
-              // end user information
               large: !this.state.large
             }));
         })
@@ -181,16 +185,16 @@ class Users extends Component {
           if (response.data.user)
             this.setState(() => ({
               // user information
-              id: response.data.user.Id,
-              fullname: response.data.user.Fullname,
-              username: response.data.user.User_name,
-              password_question: response.data.user.Password_question,
-              password_answer: response.data.user.Password_answer,
-              tel: response.data.user.Tel,
-              email: response.data.user.Email,
-              birthday: response.data.user.Birthday,
-              is_approved: response.data.user.Is_approved,
-              is_locked: response.data.user.Is_locked,
+              // id: response.data.user.Id,
+              // fullname: response.data.user.Fullname,
+              // username: response.data.user.User_name,
+              // password_question: response.data.user.Password_question,
+              // password_answer: response.data.user.Password_answer,
+              // tel: response.data.user.Tel,
+              // email: response.data.user.Email,
+              // birthday: moment(response.data.user.Birthday),
+              // is_approved: response.data.user.Is_approved,
+              // is_locked: response.data.user.Is_locked,
               // end user information
               large: !this.state.large
             }));
@@ -200,7 +204,7 @@ class Users extends Component {
         });
   }
 
-  handleInputChange(event) {
+  handleInputChange(event) {    
     this.setState({
       [event.target.name]: event.target.value
     });
@@ -277,7 +281,6 @@ class Users extends Component {
           className={'modal-lg ' + this.props.className}>
           <ModalHeader toggle={this.toggleLarge}>Update user</ModalHeader>
           <ModalBody>
-            <Input type="hidden" id="id" value={this.state.id} required />
             <Row>
               <Col xs="6">
                 <FormGroup>
@@ -324,7 +327,15 @@ class Users extends Component {
               <Col xs="6">
                 <FormGroup>
                   <Label htmlFor="birthday">Birthday</Label>
-                  <Input type="date" id="birthday" name="birthday" placeholder="Enter birthday" defaultValue={this.state.birthday} value={this.state.birthday} onChange={this.handleInputChange} required />
+                  <DatePicker id="birthday" name="birthday" className="form-control"
+                    dateFormat="DD/MM/YYYY"
+                    todayButton={"hôm nay"}
+                    selected={moment(this.state.birthday)}
+                    onChange={(date) => { this.setState({ birthday: date }) }}
+                    peekNextMonth
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select" />
                 </FormGroup>
               </Col>
               <Col xs="6">
