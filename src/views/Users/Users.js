@@ -11,6 +11,7 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Input, Label, Row, 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
+import ConfirmMessage from '../Base/Controls/ConfirmMessage';
 
 class Users extends Component {
   constructor(props) {
@@ -44,6 +45,8 @@ class Users extends Component {
     this.toggleLarge = this.toggleLarge.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.saveUser = this.saveUser.bind(this);
+    this.handleDeleteAccept = this.handleDeleteAccept.bind(this);
+    this.handleDeleteCancel = this.handleDeleteCancel.bind(this);
   }
 
   componentDidMount() {
@@ -96,7 +99,7 @@ class Users extends Component {
   }
 
   handleAdd() {
-    this.setState({ 
+    this.setState({
       large: true,
       // user information
       id: 0,
@@ -110,7 +113,7 @@ class Users extends Component {
       is_approved: false,
       is_locked: false
       // end user information
-     });
+    });
   }
 
   handleExport() {
@@ -134,7 +137,7 @@ class Users extends Component {
             email: response.data.user.Email,
             birthday: response.data.user.Birthday,
             is_approved: response.data.user.Is_approved,
-            is_locked: response.data.user.Is_locked,
+            is_locked: response.data.user.Is_lock,
             // end user information
           }));
       })
@@ -144,8 +147,37 @@ class Users extends Component {
   }
 
   handleDelete(rowIndex, row) {
-    alert(row.Id);
+    this.setState({ id: row.Id });
+    this.refs.confirmMessage.open('Xác nhận xóa dữ liệu!', 'Bạn có chắc chắn muốn xóa');
   }
+
+  handleDeleteAccept() {
+    var token = 'Bearer '.concat(this.props.token);
+    axios.put(`${api_url}/users/${this.state.id}`,
+      { headers: { Authorization: token } }).then(response => {
+        // If request is good...
+        if (response.data.success) {
+          this.refs.confirmMessage.setState({
+            showModal: false
+          });
+          this.fetchData(1, page_size_default);
+        }else{
+          this.refs.confirmMessage.setState({
+            showModal: false
+          });
+          alert(response.data.message_error);
+        }
+      })
+      .catch((error) => {
+        console.log('Message error: ' + error);
+      });
+  };
+
+  handleDeleteCancel() {
+    this.refs.confirmMessage.setState({
+      showModal: false
+    });
+  };
 
   toggleLarge() {
     this.setState({ large: !this.state.large });
@@ -163,17 +195,19 @@ class Users extends Component {
       Email: this.state.email,
       Birthday: this.state.birthday,
       Is_approved: this.state.is_approved,
-      Is_locked: this.state.is_locked
+      Is_lock: this.state.is_locked
     };
 
     if (this.state.id > 0)
       axios.put(`${api_url}/users/${this.state.id}`, data,
         { headers: { Authorization: token } }).then(response => {
           // If request is good...
-          if (response.data.user)
+          if (response.data.user) {
             this.setState(() => ({
               large: !this.state.large
             }));
+            this.fetchData(1, page_size_default);
+          }
         })
         .catch((error) => {
           console.log('Message error: ' + error);
@@ -182,29 +216,19 @@ class Users extends Component {
       axios.post(`${api_url}/users`, data,
         { headers: { Authorization: token } }).then(response => {
           // If request is good...
-          if (response.data.user)
+          if (response.data.user) {
             this.setState(() => ({
-              // user information
-              // id: response.data.user.Id,
-              // fullname: response.data.user.Fullname,
-              // username: response.data.user.User_name,
-              // password_question: response.data.user.Password_question,
-              // password_answer: response.data.user.Password_answer,
-              // tel: response.data.user.Tel,
-              // email: response.data.user.Email,
-              // birthday: moment(response.data.user.Birthday),
-              // is_approved: response.data.user.Is_approved,
-              // is_locked: response.data.user.Is_locked,
-              // end user information
               large: !this.state.large
             }));
+            this.fetchData(1, page_size_default);
+          }
         })
         .catch((error) => {
           console.log('Message error: ' + error);
         });
   }
 
-  handleInputChange(event) {    
+  handleInputChange(event) {
     this.setState({
       [event.target.name]: event.target.value
     });
@@ -264,6 +288,7 @@ class Users extends Component {
 
     return (
       <div>
+        <ConfirmMessage onAccept={this.handleAccept} onCancel={this.handleCancel} ref="confirmMessage"></ConfirmMessage>
         {toolbar}
         <BootstrapTable
           remote={{ pagination: true, filter: true }}
@@ -340,11 +365,11 @@ class Users extends Component {
               </Col>
               <Col xs="6">
                 <FormGroup check className="checkbox">
-                  <Input className="form-check-input" type="checkbox" id="is_approved" name="is_approved" value="is_approved" value={this.state.is_approved} onChange={this.handleInputChange} required />
+                  <Input className="form-check-input" type="checkbox" id="is_approved" name="is_approved" checked={this.state.is_approved} onChange={() => { this.setState({ is_approved: !this.state.is_approved }) }} required />
                   <Label check className="form-check-label" htmlFor="is_approved">Is approved</Label>
                 </FormGroup>
                 <FormGroup check className="checkbox">
-                  <Input className="form-check-input" type="checkbox" id="is_locked" name="is_locked" value="is_locked" value={this.state.is_locked} onChange={this.handleInputChange} required />
+                  <Input className="form-check-input" type="checkbox" id="is_locked" name="is_locked" checked={this.state.is_locked} onChange={() => { this.setState({ is_locked: !this.state.is_locked }) }} required />
                   <Label check className="form-check-label" htmlFor="is_locked">Is locked</Label>
                 </FormGroup>
               </Col>
@@ -354,7 +379,7 @@ class Users extends Component {
             <Button color="primary" onClick={this.saveUser}>Save</Button>{' '}
             <Button color="secondary" onClick={this.toggleLarge}>Cancel</Button>
           </ModalFooter>
-        </Modal>
+        </Modal>        
       </div>
     );
   }
