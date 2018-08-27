@@ -6,30 +6,77 @@ class Login extends Component {
   constructor(props, context) {
     super(props);
     this.state = {
-      username: '',
-      password: ''
-    };
+      fields: {},
+      errors: {}
+    }
     this.handleLogin = this.handleLogin.bind(this);
-    this.handleUserNameChange = this.handleUserNameChange.bind(this);
-    this.handlePasswordChange = this.handlePasswordChange.bind(this);
-    this.input_username = React.createRef();
-    this.input_password = React.createRef();
+    this.handleChange = this.handleChange.bind(this);
+    this.handleEnter = this.handleEnter.bind(this);
+    this.handleValidation = this.handleValidation.bind(this);
   };
 
-  componentDidMount() {
-  };
+  componentDidMount() {    
+  }
 
   handleLogin() {
-    this.props.fetchToken(this.state.username, this.state.password);
+    if(this.handleValidation()){
+      this.props.fetchToken(this.state.fields.username, this.state.fields.password);  
+    }    
   };
 
-  handleUserNameChange(e) {
-    this.setState({ username: e.target.value });
-  };
+  handleChange(field, e){    		
+    let fields = this.state.fields;
+    fields[field] = e.target.value;        
+    // this.setState({fields});
+  }
 
-  handlePasswordChange(e) {
-    this.setState({ password: e.target.value });
-  };
+  handleEnter(event) {    
+    if (event.key === 'Enter')
+    {
+      if(this.handleValidation()){
+        this.handleLogin();
+        event.preventDefault();
+      }      
+    }       
+  }
+
+  handleValidation(){
+    let fields = this.state.fields;
+    let errors = {};
+    let formIsValid = true;
+
+    //Name
+    if(!fields["username"]){
+      formIsValid = false;
+      errors["username"] = "Cannot be empty";
+    }
+
+    if(typeof fields["username"] !== "undefined"){
+      if(!fields["username"].match(/^[a-zA-Z]+$/)){
+        formIsValid = false;
+        errors["username"] = "Only letters";
+      }      	
+    }
+
+    //Email
+    // if(!fields["email"]){
+    //   formIsValid = false;
+    //   errors["email"] = "Cannot be empty";
+    // }
+
+    // if(typeof fields["email"] !== "undefined"){
+    //   let lastAtPos = fields["email"].lastIndexOf('@');
+    //   let lastDotPos = fields["email"].lastIndexOf('.');
+
+    //   if (!(lastAtPos < lastDotPos && lastAtPos > 0 && fields["email"].indexOf('@@') == -1 && lastDotPos > 2 && (fields["email"].length - lastDotPos) > 2)) {
+    //     formIsValid = false;
+    //     errors["email"] = "Email is not valid";
+    //   }
+    // }
+
+    this.setState({errors: errors});
+    return formIsValid;
+  }
 
   render() {
     const Message = () => {
@@ -46,9 +93,9 @@ class Login extends Component {
               <CardGroup>
                 <Card className="p-4">
                   <CardBody>
-                    <Form>
-                      <h1>Login</h1>
-                      <p className="text-muted">Sign In to your account</p>
+                    <Form onKeyPress={this.handleEnter}>
+                      <h1>Đăng nhập</h1>
+                      <p className="text-muted">Đăng nhập vào tài khoản của bạn</p>
                       <Message/>
                       <InputGroup className="mb-3">
                         <InputGroupAddon addonType="prepend">
@@ -56,7 +103,7 @@ class Login extends Component {
                             <i className="icon-user"></i>
                           </InputGroupText>
                         </InputGroupAddon>
-                        <Input type="text" placeholder="Username" autoComplete="username" ref={this.input_username} defaultValue={this.state.username} onChange={this.handleUserNameChange}/>
+                        <Input ref="username" type="text" size="250" placeholder="tên đăng nhập" defaultValue={''} onChange={this.handleChange.bind(this, "username")} value={this.state.fields["username"]}/>
                       </InputGroup>
                       <InputGroup className="mb-4">
                         <InputGroupAddon addonType="prepend">
@@ -64,14 +111,14 @@ class Login extends Component {
                             <i className="icon-lock"></i>
                           </InputGroupText>
                         </InputGroupAddon>
-                        <Input type="password" placeholder="Password" autoComplete="current-password" ref={this.input_password} defaultValue={this.state.password} onChange={this.handlePasswordChange}/>
+                        <Input ref="password" type="password" size="250" placeholder="mật khẩu" defaultValue={''} onChange={this.handleChange.bind(this, "password")} value={this.state.fields["password"]}/>
                       </InputGroup>
                       <Row>
                         <Col xs="6">
-                          <Button color="primary" className="px-4" onClick={this.handleLogin}>Login</Button>
+                          <Button color="primary" className="px-4" onClick={this.handleLogin}>Đăng nhập</Button>
                         </Col>
                         <Col xs="6" className="text-right">
-                          <Button color="link" className="px-0">Forgot password?</Button>
+                          <Button color="link" className="px-0">Quên mật khẩu?</Button>
                         </Col>
                       </Row>
                     </Form>
@@ -80,10 +127,9 @@ class Login extends Component {
                 <Card className="text-white bg-primary py-5 d-md-down-none" style={{ width: 44 + '%' }}>
                   <CardBody className="text-center">
                     <div>
-                      <h2>Sign up</h2>
-                      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua.</p>
-                      <Button color="primary" className="mt-3" active>Register Now!</Button>
+                      <h2>Đăng ký</h2>
+                      <p>Nếu chưa có tài khoản bạn nhấp vào nút "Đăng ký". Để thiết lập thông tin tài khoản của bạn.</p>
+                      <Button color="primary" className="mt-3" active>Đăng ký!</Button>
                     </div>
                   </CardBody>
                 </Card>
