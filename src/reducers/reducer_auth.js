@@ -1,7 +1,8 @@
 // import jwtDecode from 'jwt-decode'
 import * as auth from '../actions/action_auth'
 
-const initialState = {
+const initialState = {  
+  success: false,
   access: undefined,
   refresh: undefined,
   errors: {},
@@ -11,7 +12,8 @@ export default (state = initialState, action) => {
   switch (action.type) {
     case auth.LOGIN_SUCCESS:
       return {
-        access: {
+        success: action.payload.success, 
+        access: {          
           token: action.payload.token.Token,
           expiration: action.payload.token.Expiration
         },
@@ -19,7 +21,7 @@ export default (state = initialState, action) => {
           token: action.payload.token.Token,
           expiration: action.payload.token.Expiration
         },
-        errors: {}
+        errors: action.payload.message
       }
     case auth.TOKEN_RECEIVED:
       return {
@@ -69,6 +71,7 @@ export function isRefreshTokenExpired(state) {
 }
 
 export function isAuthenticated(state) {
+  if(!state.success) return false;
   return !isRefreshTokenExpired(state)
 }
 

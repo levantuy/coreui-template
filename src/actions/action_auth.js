@@ -18,10 +18,36 @@ export const fetchToken = (username, password) => ({
     [RSAA]: {
         endpoint: `${api_url}/accounts`,
         method: 'POST',
-        body: JSON.stringify({UserName: username, Password: password}),
+        body: JSON.stringify({ UserName: username, Password: password }),
         headers: { 'Content-Type': 'application/json' },
         types: [
-            LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE
+            {
+                type: LOGIN_REQUEST,
+                meta: { source: 'userList' }
+            }, {
+                type: LOGIN_SUCCESS,
+                payload: (action, state, res) => {
+                    const contentType = res.headers.get('Content-Type');
+                    if (contentType && ~contentType.indexOf('json')) {
+                        // Just making sure res.json() does not raise an error
+                        return res.json();
+                    }
+                }
+            }, {
+                type: LOGIN_FAILURE,
+                meta: (action, state, res) => {
+                    if (res) {
+                        return {
+                            status: res.status,
+                            statusText: res.statusText
+                        };
+                    } else {
+                        return {
+                            status: 'Network request failed'
+                        }
+                    }
+                }
+            }
         ]
     }
 })
@@ -41,10 +67,10 @@ export const refreshAccessToken = (token) => ({
     [RSAA]: {
         endpoint: `${api_url}/accounts`,
         method: 'POST',
-        body: JSON.stringify({UserName: 'admin', Password: '123456'}),
+        body: JSON.stringify({ UserName: 'admin', Password: '123456' }),
         headers: { 'Content-Type': 'application/json' },
         types: [
-          TOKEN_REQUEST, TOKEN_RECEIVED, TOKEN_FAILURE
+            TOKEN_REQUEST, TOKEN_RECEIVED, TOKEN_FAILURE
         ]
     }
 })

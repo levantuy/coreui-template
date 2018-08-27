@@ -19,7 +19,7 @@ const Login = (props) => {
 }
 
 const mapStateToProps = (state) => ({
-  errors: authErrors(state),
+  errorsMessage: authErrors(state),
   isAuthenticated: isAuthenticated(state)
 })
 

@@ -32,6 +32,12 @@ class Login extends Component {
   };
 
   render() {
+    const Message = () => {
+      if (typeof this.props.errorsMessage === 'string')
+        return (<div><p className="text-danger">{this.props.errorsMessage}</p></div>);
+      else return (<div></div>);
+    }
+
     return (
       <div className="app flex-row align-items-center">
         <Container>
@@ -43,6 +49,7 @@ class Login extends Component {
                     <Form>
                       <h1>Login</h1>
                       <p className="text-muted">Sign In to your account</p>
+                      <Message/>
                       <InputGroup className="mb-3">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
