@@ -11,7 +11,7 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Input, Label, Row, 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
-import ConfirmMessage from '../Base/Controls/ConfirmMessage';
+import Message from '../Base/Controls/ConfirmMessage';
 
 class Users extends Component {
   constructor(props) {
@@ -45,8 +45,7 @@ class Users extends Component {
     this.toggleLarge = this.toggleLarge.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.saveUser = this.saveUser.bind(this);
-    this.handleDeleteAccept = this.handleDeleteAccept.bind(this);
-    this.handleDeleteCancel = this.handleDeleteCancel.bind(this);
+    this.handleDeleteAccept = this.handleDeleteAccept.bind(this);    
   }
 
   componentDidMount() {
@@ -153,7 +152,7 @@ class Users extends Component {
 
   handleDeleteAccept() {
     var token = 'Bearer '.concat(this.props.token);
-    axios.put(`${api_url}/users/${this.state.id}`,
+    axios.delete(`${api_url}/users/${this.state.id}`,
       { headers: { Authorization: token } }).then(response => {
         // If request is good...
         if (response.data.success) {
@@ -161,7 +160,7 @@ class Users extends Component {
             showModal: false
           });
           this.fetchData(1, page_size_default);
-        }else{
+        } else {
           this.refs.confirmMessage.setState({
             showModal: false
           });
@@ -171,12 +170,6 @@ class Users extends Component {
       .catch((error) => {
         console.log('Message error: ' + error);
       });
-  };
-
-  handleDeleteCancel() {
-    this.refs.confirmMessage.setState({
-      showModal: false
-    });
   };
 
   toggleLarge() {
@@ -288,7 +281,7 @@ class Users extends Component {
 
     return (
       <div>
-        <ConfirmMessage onAccept={this.handleAccept} onCancel={this.handleCancel} ref="confirmMessage"></ConfirmMessage>
+        <Message onAccept={this.handleDeleteAccept} ref="confirmMessage"></Message>
         {toolbar}
         <BootstrapTable
           remote={{ pagination: true, filter: true }}
@@ -379,10 +372,10 @@ class Users extends Component {
             <Button color="primary" onClick={this.saveUser}>Save</Button>{' '}
             <Button color="secondary" onClick={this.toggleLarge}>Cancel</Button>
           </ModalFooter>
-        </Modal>        
+        </Modal>
       </div>
     );
   }
 }
 
-export default reduxForm({ form: 'Users' })(Users)
+export default reduxForm({ form: 'Users', Message })(Users)
