@@ -15,47 +15,50 @@ class Login extends Component {
     this.handleValidation = this.handleValidation.bind(this);
   };
 
-  componentDidMount() {    
+  componentDidMount() {
   }
 
   handleLogin() {
-    if(this.handleValidation()){
-      this.props.fetchToken(this.state.fields.username, this.state.fields.password);  
-    }    
+    if (this.handleValidation()) {
+      this.props.fetchToken(this.state.fields['username'], this.state.fields['password']);
+    }
   };
 
-  handleChange(field, e){    		
+  handleChange(field, e) {
     let fields = this.state.fields;
-    fields[field] = e.target.value;        
-    // this.setState({fields});
-  }
+    fields[field] = e.target.value;
+    this.setState({ fields });
+  };
 
-  handleEnter(event) {    
-    if (event.key === 'Enter')
-    {
-      if(this.handleValidation()){
-        this.handleLogin();
-        event.preventDefault();
-      }      
-    }       
-  }
+  handleEnter(event) {
+    event.preventDefault();
+    if (this.handleValidation()) {
+      this.handleLogin();
+    }
+  };
 
-  handleValidation(){
+  handleValidation() {
     let fields = this.state.fields;
     let errors = {};
     let formIsValid = true;
 
     //Name
-    if(!fields["username"]){
+    if (!fields["username"]) {
       formIsValid = false;
-      errors["username"] = "Cannot be empty";
+      errors["username"] = "không thể để trống";
     }
 
-    if(typeof fields["username"] !== "undefined"){
-      if(!fields["username"].match(/^[a-zA-Z]+$/)){
-        formIsValid = false;
-        errors["username"] = "Only letters";
-      }      	
+    // if(typeof fields["username"] !== "undefined"){
+    //   if(!fields["username"].match(/^[a-zA-Z]+$/)){
+    //     formIsValid = false;
+    //     errors["username"] = "Only letters";
+    //   }      	
+    // }
+
+    //Password
+    if (!fields["password"]) {
+      formIsValid = false;
+      errors["password"] = "không thể để trống";
     }
 
     //Email
@@ -74,7 +77,7 @@ class Login extends Component {
     //   }
     // }
 
-    this.setState({errors: errors});
+    this.setState({ errors: errors });
     return formIsValid;
   }
 
@@ -93,26 +96,31 @@ class Login extends Component {
               <CardGroup>
                 <Card className="p-4">
                   <CardBody>
-                    <Form onKeyPress={this.handleEnter}>
+                    <Form onSubmit={this.handleEnter}>
                       <h1>Đăng nhập</h1>
                       <p className="text-muted">Đăng nhập vào tài khoản của bạn</p>
-                      <Message/>
-                      <InputGroup className="mb-3">
+                      <Message />
+                      <InputGroup>
+                        {/* <InputGroup className="mb-3"> */}
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
                             <i className="icon-user"></i>
                           </InputGroupText>
                         </InputGroupAddon>
-                        <Input ref="username" type="text" size="250" placeholder="tên đăng nhập" defaultValue={''} onChange={this.handleChange.bind(this, "username")} value={this.state.fields["username"]}/>
+                        <Input ref="username" type="text" size="250" placeholder="tên đăng nhập" defaultValue={''} onChange={this.handleChange.bind(this, "username")} value={this.state.fields["username"]} />
                       </InputGroup>
-                      <InputGroup className="mb-4">
+                      <div><p className="text-danger">{this.state.errors["username"]}</p></div>
+                      <InputGroup>
+                        {/* <InputGroup className="mb-4"> */}
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
                             <i className="icon-lock"></i>
                           </InputGroupText>
                         </InputGroupAddon>
-                        <Input ref="password" type="password" size="250" placeholder="mật khẩu" defaultValue={''} onChange={this.handleChange.bind(this, "password")} value={this.state.fields["password"]}/>
+                        <Input ref="password" type="password" size="250" placeholder="mật khẩu" defaultValue={''} onChange={this.handleChange.bind(this, "password")} value={this.state.fields["password"]} />
                       </InputGroup>
+                      <p className="text-danger">{this.state.errors["password"]}</p>
+                      <InputGroup className="mb-4"></InputGroup>
                       <Row>
                         <Col xs="6">
                           <Button color="primary" className="px-4" onClick={this.handleLogin}>Đăng nhập</Button>
