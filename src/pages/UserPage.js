@@ -9,8 +9,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetchUsers: (page, sizePerPage) => {
-      dispatch(fetchUsers(page, sizePerPage));
+    fetchUsers: (page, sizePerPage, fullname, user_name, tel, email) => {
+      dispatch(fetchUsers(page, sizePerPage, fullname, user_name, tel, email));
     }
   }
 }

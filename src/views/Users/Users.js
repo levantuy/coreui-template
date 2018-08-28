@@ -33,8 +33,15 @@ class Users extends Component {
       email: '',
       birthday: moment(),
       is_approved: false,
-      is_locked: false
+      is_locked: false,
       // end user information
+
+      // filter
+      filter_fullname: '',
+      filter_username: '',
+      filter_tel: '',
+      filter_email: ''
+      // end filter
     };
     this.fetchData = this.fetchData.bind(this);
     this.handleTableChange = this.handleTableChange.bind(this);
@@ -45,56 +52,58 @@ class Users extends Component {
     this.toggleLarge = this.toggleLarge.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.saveUser = this.saveUser.bind(this);
-    this.handleDeleteAccept = this.handleDeleteAccept.bind(this);    
+    this.handleDeleteAccept = this.handleDeleteAccept.bind(this);
   }
 
   componentDidMount() {
     this.fetchData(1, page_size_default);
   }
 
-  fetchData(page = 1, sizePerPage = 10, fullname = '', user_name = '', tel = '', email = '') {
-    var token = 'Bearer '.concat(this.props.token);
-    axios.get(`${api_url}/users/filter?pageIndex=${page}&pageSize=${sizePerPage}&fullname=${fullname}&user_name=${user_name}&tel=${tel}&email=${email}`,
-      { headers: { Authorization: token } }).then(response => {
-        // If request is good...
-        if (response.data.users)
-          this.setState(() => ({
-            data: response.data.users,
-            page: page,
-            totalSize: response.data.totalSize,
-            sizePerPage: sizePerPage
-          }));
-      })
-      .catch((error) => {
-        console.log('Message error: ' + error);
-      });
+  fetchData(page = 1, sizePerPage = 10, fullname = '', user_name = '', tel = '', email = '') {    
+    this.props.fetchUsers(page, sizePerPage, fullname, user_name, tel, email);
   }
 
   handleTableChange = (type, { page, sizePerPage, filters }) => {
+    // filter
     var fullname = '', user_name = '', tel = '', email = '';
+    var isExcute = false;
     for (const dataField in filters) {
       const { filterVal, filterType, comparator } = filters[dataField];
-
       if (filterType === 'TEXT') {
         if (comparator === Comparator.LIKE) {
           switch (dataField) {
-            case 'Fullname':
+            case 'Fullname':              
+              if (this.state.filter_fullname != filterVal) isExcute = true;
+              this.setState({ filter_fullname: filterVal });
               fullname = filterVal;
               break;
             case 'User_name':
+              if (this.state.filter_username != filterVal) isExcute = true;
+              this.setState({ filter_username: filterVal });
               user_name = filterVal;
               break;
             case 'Tel':
+              if (this.state.filter_tel != filterVal) isExcute = true;
+              this.setState({ filter_tel: filterVal });
               tel = filterVal;
               break;
             case 'Email':
+              if (this.state.filter_email != filterVal) isExcute = true;
+              this.setState({ filter_email: filterVal });
               email = filterVal;
               break;
           }
         }
       }
     }
-    this.fetchData(page, sizePerPage, fullname, user_name, tel, email);
+
+    // set page
+    if(this.state.page != page || this.state.sizePerPage != sizePerPage) isExcute = true;    
+    this.setState({page: page, sizePerPage: sizePerPage});
+
+    // excute
+    if (isExcute)
+      this.fetchData(page, sizePerPage, fullname, user_name, tel, email);
   }
 
   handleAdd() {
@@ -229,7 +238,7 @@ class Users extends Component {
 
   render() {
 
-    if (!this.state.data) {
+    if (!this.props.userState.users) {
       return <div className="container"><h1>Posts</h1><h3>Loading...</h3></div>
     }
 
@@ -256,19 +265,27 @@ class Users extends Component {
     }, {
       dataField: 'Fullname',
       text: 'Full Name',
-      filter: textFilter()
+      filter: textFilter({
+        defaultValue: this.state.filter_fullname
+      })
     }, {
       dataField: 'User_name',
       text: 'User Name',
-      filter: textFilter()
+      filter: textFilter({
+        defaultValue: this.state.filter_username
+      })
     }, {
       dataField: 'Tel',
       text: 'Tel',
-      filter: textFilter()
+      filter: textFilter({
+        defaultValue: this.state.filter_tel
+      })
     }, {
       dataField: 'Email',
       text: 'Email',
-      filter: textFilter()
+      filter: textFilter({
+        defaultValue: this.state.filter_email
+      })
     }, {
       dataField: 'Is_lock',
       text: 'Is_lock',
@@ -286,10 +303,10 @@ class Users extends Component {
         <BootstrapTable
           remote={{ pagination: true, filter: true }}
           keyField="Id"
-          data={this.state.data}
+          data={this.props.userState.users}
           columns={columns}
           filter={filterFactory()}
-          pagination={paginationFactory(optionsGridview.options(this.state.page, this.state.sizePerPage, this.state.totalSize))}
+          pagination={paginationFactory(optionsGridview.options(this.state.page, this.state.sizePerPage, this.props.userState.totalSize))}
           onTableChange={this.handleTableChange}
           striped
           hover
