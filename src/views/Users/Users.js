@@ -37,10 +37,10 @@ class Users extends Component {
       // end user information
 
       // filter
-      filter_fullname: '',
-      filter_username: '',
-      filter_tel: '',
-      filter_email: ''
+      filter_Fullname: '',
+      filter_User_name: '',
+      filter_Tel: '',
+      filter_Email: ''
       // end filter
     };
     this.fetchData = this.fetchData.bind(this);
@@ -59,51 +59,39 @@ class Users extends Component {
     this.fetchData(1, page_size_default);
   }
 
-  fetchData(page = 1, sizePerPage = 10, fullname = '', user_name = '', tel = '', email = '') {    
-    this.props.fetchUsers(page, sizePerPage, fullname, user_name, tel, email);
+  fetchData(page = 1, sizePerPage = 10) {
+    this.props.fetchUsers(page, sizePerPage, this.state.filter_Fullname, this.state.filter_User_name, this.state.filter_Tel, this.state.filter_Email);
   }
 
   handleTableChange = (type, { page, sizePerPage, filters }) => {
-    // filter
-    var fullname = '', user_name = '', tel = '', email = '';
+    // filter    
     var isExcute = false;
-    for (const dataField in filters) {
-      const { filterVal, filterType, comparator } = filters[dataField];
-      if (filterType === 'TEXT') {
-        if (comparator === Comparator.LIKE) {
-          switch (dataField) {
-            case 'Fullname':              
-              if (this.state.filter_fullname != filterVal) isExcute = true;
-              this.setState({ filter_fullname: filterVal });
-              fullname = filterVal;
-              break;
-            case 'User_name':
-              if (this.state.filter_username != filterVal) isExcute = true;
-              this.setState({ filter_username: filterVal });
-              user_name = filterVal;
-              break;
-            case 'Tel':
-              if (this.state.filter_tel != filterVal) isExcute = true;
-              this.setState({ filter_tel: filterVal });
-              tel = filterVal;
-              break;
-            case 'Email':
-              if (this.state.filter_email != filterVal) isExcute = true;
-              this.setState({ filter_email: filterVal });
-              email = filterVal;
-              break;
+    var fields = ['filter_Fullname', 'filter_User_name', 'filter_Tel', 'filter_Email'];
+    fields.forEach(field => {
+      const a = filters[field];
+      if (filters[field.replace('filter_', '')]) {
+        const { filterVal, filterType, comparator } = filters[field.replace('filter_', '')];
+        if (filterType === 'TEXT') {
+          if (comparator === Comparator.LIKE) {
+            if (this.state[field] != filterVal) {
+              isExcute = true;
+              this.setState({ [field]: filterVal });
+            }
           }
         }
+      } else if (this.state[field]) {
+        this.setState({ [field]: '' });
+        isExcute = true;
       }
-    }
+    });
 
     // set page
-    if(this.state.page != page || this.state.sizePerPage != sizePerPage) isExcute = true;    
-    this.setState({page: page, sizePerPage: sizePerPage});
+    if (this.state.page != page || this.state.sizePerPage != sizePerPage) isExcute = true;
+    this.setState({ page: page, sizePerPage: sizePerPage });
 
     // excute
     if (isExcute)
-      this.fetchData(page, sizePerPage, fullname, user_name, tel, email);
+      this.fetchData(page, sizePerPage);
   }
 
   handleAdd() {
@@ -214,7 +202,7 @@ class Users extends Component {
         .catch((error) => {
           console.log('Message error: ' + error);
         });
-    else
+    else //this.props.usersAdd(data);
       axios.post(`${api_url}/users`, data,
         { headers: { Authorization: token } }).then(response => {
           // If request is good...
@@ -266,25 +254,25 @@ class Users extends Component {
       dataField: 'Fullname',
       text: 'Full Name',
       filter: textFilter({
-        defaultValue: this.state.filter_fullname
+        defaultValue: this.state.filter_Fullname
       })
     }, {
       dataField: 'User_name',
       text: 'User Name',
       filter: textFilter({
-        defaultValue: this.state.filter_username
+        defaultValue: this.state.filter_User_name
       })
     }, {
       dataField: 'Tel',
       text: 'Tel',
       filter: textFilter({
-        defaultValue: this.state.filter_tel
+        defaultValue: this.state.filter_Tel
       })
     }, {
       dataField: 'Email',
       text: 'Email',
       filter: textFilter({
-        defaultValue: this.state.filter_email
+        defaultValue: this.state.filter_Email
       })
     }, {
       dataField: 'Is_lock',
