@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { fetchUsers, usersAdd } from '../actions/action_user';
+import { fetchUsers, usersAdd, usersEdit, usersDelete, usersGet } from '../actions/action_user';
 import UsersForm from '../views/Users/Users';
 
 const mapStateToProps = (state) => ({
@@ -13,6 +13,12 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(fetchUsers(page, sizePerPage, fullname, user_name, tel, email));
     }, usersAdd: (user) =>{
       dispatch(usersAdd(user));
+    }, usersEdit: (user) =>{
+      dispatch(usersEdit(user));
+    }, usersDelete: (id) =>{
+      dispatch(usersDelete(id));
+    }, usersGet: (id) =>{
+      dispatch(usersGet(id));
     }
   }
 }

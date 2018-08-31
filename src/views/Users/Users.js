@@ -112,34 +112,11 @@ class Users extends Component {
     });
   }
 
-  handleExport() {
-
-  }
+  handleExport() {}
 
   handleEdit(rowIndex, row) {
     this.setState({ large: true });
-    var token = 'Bearer '.concat(this.props.token);
-    axios.get(`${api_url}/users/${row.Id}`,
-      { headers: { Authorization: token } }).then(response => {
-        if (response.data.user)
-          this.setState(() => ({
-            // user information
-            id: response.data.user.Id,
-            fullname: response.data.user.Fullname,
-            username: response.data.user.User_name,
-            password_question: response.data.user.Password_question,
-            password_answer: response.data.user.Password_answer,
-            tel: response.data.user.Tel,
-            email: response.data.user.Email,
-            birthday: response.data.user.Birthday,
-            is_approved: response.data.user.Is_approved,
-            is_locked: response.data.user.Is_lock,
-            // end user information
-          }));
-      })
-      .catch((error) => {
-        console.log('Message error: ' + error);
-      });
+    this.props.usersGet(row.Id);
   }
 
   handleDelete(rowIndex, row) {
@@ -148,25 +125,7 @@ class Users extends Component {
   }
 
   handleDeleteAccept() {
-    var token = 'Bearer '.concat(this.props.token);
-    axios.delete(`${api_url}/users/${this.state.id}`,
-      { headers: { Authorization: token } }).then(response => {
-        // If request is good...
-        if (response.data.success) {
-          this.refs.confirmMessage.setState({
-            showModal: false
-          });
-          this.fetchData(1, page_size_default);
-        } else {
-          this.refs.confirmMessage.setState({
-            showModal: false
-          });
-          alert(response.data.message_error);
-        }
-      })
-      .catch((error) => {
-        console.log('Message error: ' + error);
-      });
+    this.props.usersDelete(this.state.id);  
   };
 
   toggleLarge() {
@@ -188,34 +147,8 @@ class Users extends Component {
       Is_lock: this.state.is_locked
     };
 
-    if (this.state.id > 0)
-      axios.put(`${api_url}/users/${this.state.id}`, data,
-        { headers: { Authorization: token } }).then(response => {
-          // If request is good...
-          if (response.data.user) {
-            this.setState(() => ({
-              large: !this.state.large
-            }));
-            this.fetchData(1, page_size_default);
-          }
-        })
-        .catch((error) => {
-          console.log('Message error: ' + error);
-        });
-    else //this.props.usersAdd(data);
-      axios.post(`${api_url}/users`, data,
-        { headers: { Authorization: token } }).then(response => {
-          // If request is good...
-          if (response.data.user) {
-            this.setState(() => ({
-              large: !this.state.large
-            }));
-            this.fetchData(1, page_size_default);
-          }
-        })
-        .catch((error) => {
-          console.log('Message error: ' + error);
-        });
+    if (this.state.id > 0) this.props.usersEdit(data);     
+    else this.props.usersAdd(data);     
   }
 
   handleInputChange(event) {
@@ -225,7 +158,7 @@ class Users extends Component {
   }
 
   render() {
-
+    console.log(this.props.userState);
     if (!this.props.userState.users) {
       return <div className="container"><h1>Posts</h1><h3>Loading...</h3></div>
     }

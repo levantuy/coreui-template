@@ -54,7 +54,7 @@ export default (state = initialState, action) => {
             return {
                 ...state, userState: {
                     user: undefined,
-                    loading: false
+                    loading: true
                 }
             };
         case user.USERS_ADD_SUCCESS:
@@ -72,7 +72,78 @@ export default (state = initialState, action) => {
                     errors: action.payload.message,
                     loading: false
                 }
-            };            
+            };
+        case user.USERS_EDIT_REQUEST:
+            return {
+                ...state, userState: {
+                    user: undefined,
+                    loading: true
+                }
+            };
+        case user.USERS_EDIT_SUCCESS:
+            return {
+                ...state, userState: {
+                    user: action.payload.user,
+                    errors: {},
+                    loading: false
+                }
+            };
+        case user.USERS_EDIT_FAILURE:
+            return {
+                ...state, userState: {
+                    user: undefined,
+                    errors: action.payload.message,
+                    loading: false
+                }
+            };
+        case user.USERS_DELETE_REQUEST:
+            return {
+                ...state, userState: {
+                    user: undefined,
+                    loading: true
+                }
+            };
+        case user.USERS_DELETE_SUCCESS:
+            return {
+                ...state, userState: {
+                    user: undefined,
+                    errors: {},
+                    loading: false
+                }
+            };
+        case user.USERS_DELETE_FAILURE:
+            return {
+                ...state, userState: {
+                    user: undefined,
+                    errors: action.payload.message,
+                    loading: false
+                }
+            };
+        case user.USERS_GET_REQUEST:
+            return {
+                ...state, userState: {
+                    user: undefined,
+                    loading: true
+                }
+            };
+        case user.USERS_GET_SUCCESS:
+            return {
+                ...state, userState: {
+                    user: action.payload.user,
+                    errors: {},
+                    loading: false,
+                    users: state.users
+                }
+            };
+        case user.USERS_GET_FAILURE:
+            return {
+                ...state, userState: {
+                    user: undefined,
+                    errors: action.payload.message,
+                    loading: false
+                }
+            };
+
         default:
             return state
     }

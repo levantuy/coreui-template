@@ -4,11 +4,12 @@ import reducer from '../reducers';
 import auth from '../utils/apiError';
 import { apiMiddleware } from 'redux-api-middleware';
 import axiosMiddleware from '../utils/axiosError';
+import thunk from 'redux-thunk';
 
 export default function configureStore(initialState) {
   
   const finalCreateStore = compose(
-    applyMiddleware(promise, apiMiddleware, auth, axiosMiddleware),
+    applyMiddleware(promise, apiMiddleware, auth, axiosMiddleware, thunk),
     window.devToolsExtension ? window.devToolsExtension() : f => f
   )(createStore);
 

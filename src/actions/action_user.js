@@ -7,10 +7,21 @@ export const FETCH_USERS = 'FETCH_USERS';
 export const FETCH_USERS_SUCCESS = 'FETCH_USERS_SUCCESS';
 export const FETCH_USERS_FAILURE = 'FETCH_USERS_FAILURE';
 // users add
-//users
 export const USERS_ADD_REQUEST = 'USERS_ADD_REQUEST';
 export const USERS_ADD_SUCCESS = 'USERS_ADD_SUCCESS';
 export const USERS_ADD_FAILURE = 'USERS_ADD_FAILURE';
+// users edit
+export const USERS_EDIT_REQUEST = 'USERS_EDIT_REQUEST';
+export const USERS_EDIT_SUCCESS = 'USERS_EDIT_SUCCESS';
+export const USERS_EDIT_FAILURE = 'USERS_EDIT_FAILURE';
+// users delete
+export const USERS_DELETE_REQUEST = 'USERS_EDIT_REQUEST';
+export const USERS_DELETE_SUCCESS = 'USERS_EDIT_SUCCESS';
+export const USERS_DELETE_FAILURE = 'USERS_EDIT_FAILURE';
+// user get
+export const USERS_GET_REQUEST = 'USERS_GET_REQUEST';
+export const USERS_GET_SUCCESS = 'USERS_GET_SUCCESS';
+export const USERS_GET_FAILURE = 'USERS_GET_FAILURE';
 
 export function fetchUsers(pageIndex, pageSize, fullname = '', user_name = '', tel = '', email = '') {
   return {
@@ -33,40 +44,10 @@ export function usersAdd(user) {
     const actionResponse = await dispatch({
       [CALL_API]: {
         endpoint: `${api_url}/users`,
-        method: 'POST',
-        body: user,
+        method: "POST",
+        body: JSON.stringify(user),
         headers: withAuth({ 'Content-Type': 'application/json' }),
-        types: [
-          {
-            type: USERS_ADD_REQUEST,
-            meta: { source: 'users add' }
-          }, {
-            type: USERS_ADD_SUCCESS,
-            payload: (action, state, res) => {
-              const contentType = res.headers.get('Content-Type');
-              if (contentType && ~contentType.indexOf('json')) {
-                // reload users list
-                dispatch(fetchUsers(1, 10,)); // <== call second action here
-                // Just making sure res.json() does not raise an error
-                return res.json();
-              }
-            }
-          }, {
-            type: USERS_ADD_FAILURE,
-            meta: (action, state, res) => {
-              if (res) {
-                return {
-                  status: res.status,
-                  statusText: res.statusText
-                };
-              } else {
-                return {
-                  status: 'Network request failed'
-                }
-              }
-            }
-          }
-        ]
+        types: [USERS_ADD_REQUEST, USERS_ADD_SUCCESS, USERS_ADD_FAILURE]
       }
     });
 
@@ -79,6 +60,80 @@ export function usersAdd(user) {
     //return actionResponse;
 
     // OR resolve another asyncAction here directly and pass the previous received payload value as argument...
-    return await fetchUsers(1,10);
+    return await dispatch(fetchUsers(1,10));
   };
 }
+
+export function usersEdit(user) {
+  return async(dispatch, getState) => {
+    const actionResponse = await dispatch({
+      [CALL_API]: {
+        endpoint: `${api_url}/users/${user.Id}`,
+        method: 'PUT',
+        body: JSON.stringify(user),
+        headers: withAuth({ 'Content-Type': 'application/json' }),
+        types: [USERS_EDIT_REQUEST, USERS_EDIT_SUCCESS, USERS_EDIT_FAILURE]
+      }
+    });
+
+    if (actionResponse.error) {
+      // the last dispatched action has errored, break out of the promise chain.
+      throw new Error("Promise flow received action error", actionResponse);
+    }
+
+    // you can EITHER return the above resolved promise (actionResponse) here...
+    //return actionResponse;
+
+    // OR resolve another asyncAction here directly and pass the previous received payload value as argument...
+    return await dispatch(fetchUsers(1,10));
+  };
+}
+
+export function usersDelete(id) {
+  return async(dispatch, getState) => {
+    const actionResponse = await dispatch({
+      [CALL_API]: {
+        endpoint: `${api_url}/users/${id}`,
+        method: 'DELETE',        
+        headers: withAuth({ 'Content-Type': 'application/json' }),
+        types: [USERS_DELETE_REQUEST, USERS_DELETE_SUCCESS, USERS_DELETE_FAILURE]         
+      }
+    });
+
+    if (actionResponse.error) {
+      // the last dispatched action has errored, break out of the promise chain.
+      throw new Error("Promise flow received action error", actionResponse);
+    }
+
+    // you can EITHER return the above resolved promise (actionResponse) here...
+    //return actionResponse;
+
+    // OR resolve another asyncAction here directly and pass the previous received payload value as argument...
+    return await dispatch(fetchUsers(1,10));
+  };
+}
+
+export function usersGet(id) {
+  return async(dispatch, getState) => {
+    const actionResponse = await dispatch({
+      [CALL_API]: {
+        endpoint: `${api_url}/users/${id}`,
+        method: 'GET',        
+        headers: withAuth({ 'Content-Type': 'application/json' }),
+        types: [USERS_GET_REQUEST, USERS_GET_SUCCESS, USERS_GET_FAILURE]         
+      }
+    });
+
+    if (actionResponse.error) {
+      // the last dispatched action has errored, break out of the promise chain.
+      throw new Error("Promise flow received action error", actionResponse);
+    }
+
+    // you can EITHER return the above resolved promise (actionResponse) here...
+    //return actionResponse;
+
+    // OR resolve another asyncAction here directly and pass the previous received payload value as argument...
+    return await dispatch(fetchUsers(1,10));
+  };
+}
+
