@@ -1,10 +1,9 @@
 import { connect } from 'react-redux';
-import { fetchUsers, usersAdd, usersEdit, usersDelete, usersGet } from '../actions/action_user';
+import { fetchUsers, usersAdd, usersEdit, usersDelete, usersGet, usersOpenModal } from '../actions/action_user';
 import UsersForm from '../views/Users/Users';
 
 const mapStateToProps = (state) => ({
-  userState: state.userReducer.userState,
-  token: state.authReducer.access.token
+  userState: state.userReducer.userState
 })
 
 const mapDispatchToProps = (dispatch) => {
@@ -19,6 +18,8 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(usersDelete(id));
     }, usersGet: (id) =>{
       dispatch(usersGet(id));
+    }, usersOpenModal: () =>{
+      dispatch(usersOpenModal());
     }
   }
 }

@@ -5,13 +5,11 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import filterFactory, { textFilter, Comparator } from 'react-bootstrap-table2-filter';
 import paginationFactory from 'react-bootstrap-table2-paginator';
-import { api_url, page_size_default, optionsGridview } from '../../utils/api-config';
-import axios from 'axios';
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Input, Label, Row, Col, FormGroup } from 'reactstrap';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import moment from 'moment';
+import { page_size_default, optionsGridview } from '../../utils/api-config';
+import { Button } from 'reactstrap';
+
 import Message from '../Base/Controls/ConfirmMessage';
+import User from './User';
 
 class Users extends Component {
   constructor(props) {
@@ -21,21 +19,8 @@ class Users extends Component {
       error: {},
       totalSize: 10,
       page: 1,
-      sizePerPage: 10,
-      large: false,
-      // user information
+      sizePerPage: 10,      
       id: 0,
-      fullname: '',
-      username: '',
-      password_question: '',
-      password_answer: '',
-      tel: '',
-      email: '',
-      birthday: moment(),
-      is_approved: false,
-      is_locked: false,
-      // end user information
-
       // filter
       filter_Fullname: '',
       filter_User_name: '',
@@ -45,13 +30,9 @@ class Users extends Component {
     };
     this.fetchData = this.fetchData.bind(this);
     this.handleTableChange = this.handleTableChange.bind(this);
-    this.handleEdit = this.handleEdit.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.handleAdd = this.handleAdd.bind(this);
     this.handleExport = this.handleExport.bind(this);
-    this.toggleLarge = this.toggleLarge.bind(this);
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.saveUser = this.saveUser.bind(this);
     this.handleDeleteAccept = this.handleDeleteAccept.bind(this);
   }
 
@@ -95,27 +76,12 @@ class Users extends Component {
   }
 
   handleAdd() {
-    this.setState({
-      large: true,
-      // user information
-      id: 0,
-      fullname: '',
-      username: '',
-      password_question: '',
-      password_answer: '',
-      tel: '',
-      email: '',
-      birthday: moment(),
-      is_approved: false,
-      is_locked: false
-      // end user information
-    });
+    this.props.usersOpenModal();
   }
 
   handleExport() {}
 
   handleEdit(rowIndex, row) {
-    this.setState({ large: true });
     this.props.usersGet(row.Id);
   }
 
@@ -126,43 +92,15 @@ class Users extends Component {
 
   handleDeleteAccept() {
     this.props.usersDelete(this.state.id);  
-  };
+  };  
 
-  toggleLarge() {
-    this.setState({ large: !this.state.large });
-  }
+  render() {    
+    if(this.props.userState.isModal) return <div><User></User></div>
 
-  saveUser() {
-    var token = 'Bearer '.concat(this.props.token);
-    let data = {
-      Id: this.state.id,
-      Fullname: this.state.fullname,
-      User_name: this.state.username,
-      Password_question: this.state.password_question,
-      Password_answer: this.state.password_answer,
-      Tel: this.state.tel,
-      Email: this.state.email,
-      Birthday: this.state.birthday,
-      Is_approved: this.state.is_approved,
-      Is_lock: this.state.is_locked
-    };
+    if (this.props.userState.errors) return <div className="container"><p>{this.props.userState.errors}</p></div>
 
-    if (this.state.id > 0) this.props.usersEdit(data);     
-    else this.props.usersAdd(data);     
-  }
-
-  handleInputChange(event) {
-    this.setState({
-      [event.target.name]: event.target.value
-    });
-  }
-
-  render() {
-    console.log(this.props.userState);
-    if (!this.props.userState.users) {
-      return <div className="container"><h1>Posts</h1><h3>Loading...</h3></div>
-    }
-
+    if (this.props.userState.loading || !this.props.userState.users) return <div className="container"><h1>Posts</h1><h3>Loading...</h3></div>
+    
     const actionFormatter = (cell, row, rowIndex, formatExtraData) => {
       return (
         <div>
@@ -172,8 +110,7 @@ class Users extends Component {
       );
     }
 
-    const toolbar =
-      (
+    const toolbar = (
         <div>
           <Button className="table-toolbar-button" color="primary" onClick={this.handleAdd}>Add</Button>
           <Button className="table-toolbar-button" color="warning" onClick={this.handleExport}>Export</Button>
@@ -232,85 +169,7 @@ class Users extends Component {
           striped
           hover
           condensed
-        />
-        <Modal isOpen={this.state.large} toggle={this.toggleLarge}
-          className={'modal-lg ' + this.props.className}>
-          <ModalHeader toggle={this.toggleLarge}>Update user</ModalHeader>
-          <ModalBody>
-            <Row>
-              <Col xs="6">
-                <FormGroup>
-                  <Label htmlFor="fullname">Full name</Label>
-                  <Input type="text" id="full_name" name="fullname" placeholder="Enter your full name" value={this.state.fullname} onChange={this.handleInputChange} required />
-                </FormGroup>
-              </Col>
-              <Col xs="6">
-                <FormGroup>
-                  <Label htmlFor="username">User name</Label>
-                  <Input type="text" id="username" name="username" placeholder="Enter user name" value={this.state.username} onChange={this.handleInputChange} required />
-                </FormGroup>
-              </Col>
-            </Row>
-            <Row>
-              <Col xs="6">
-                <FormGroup>
-                  <Label htmlFor="password_question">Password question</Label>
-                  <Input type="text" id="password_question" name="password_question" placeholder="Enter your password question" value={this.state.password_question} onChange={this.handleInputChange} required />
-                </FormGroup>
-              </Col>
-              <Col xs="6">
-                <FormGroup>
-                  <Label htmlFor="password_answer">Password answer</Label>
-                  <Input type="text" id="password_answer" name="password_answer" placeholder="Enter password answer" value={this.state.password_answer} onChange={this.handleInputChange} required />
-                </FormGroup>
-              </Col>
-            </Row>
-            <Row>
-              <Col xs="6">
-                <FormGroup>
-                  <Label htmlFor="tel">Tel</Label>
-                  <Input type="text" id="tel" name="tel" placeholder="Enter tel" value={this.state.tel} onChange={this.handleInputChange} required />
-                </FormGroup>
-              </Col>
-              <Col xs="6">
-                <FormGroup>
-                  <Label htmlFor="email">Email</Label>
-                  <Input type="text" id="email" name="email" placeholder="Enter email" value={this.state.email} onChange={this.handleInputChange} required />
-                </FormGroup>
-              </Col>
-            </Row>
-            <Row>
-              <Col xs="6">
-                <FormGroup>
-                  <Label htmlFor="birthday">Birthday</Label>
-                  <DatePicker id="birthday" name="birthday" className="form-control"
-                    dateFormat="DD/MM/YYYY"
-                    todayButton={"hôm nay"}
-                    selected={moment(this.state.birthday)}
-                    onChange={(date) => { this.setState({ birthday: date }) }}
-                    peekNextMonth
-                    showMonthDropdown
-                    showYearDropdown
-                    dropdownMode="select" />
-                </FormGroup>
-              </Col>
-              <Col xs="6">
-                <FormGroup check className="checkbox">
-                  <Input className="form-check-input" type="checkbox" id="is_approved" name="is_approved" checked={this.state.is_approved} onChange={() => { this.setState({ is_approved: !this.state.is_approved }) }} required />
-                  <Label check className="form-check-label" htmlFor="is_approved">Is approved</Label>
-                </FormGroup>
-                <FormGroup check className="checkbox">
-                  <Input className="form-check-input" type="checkbox" id="is_locked" name="is_locked" checked={this.state.is_locked} onChange={() => { this.setState({ is_locked: !this.state.is_locked }) }} required />
-                  <Label check className="form-check-label" htmlFor="is_locked">Is locked</Label>
-                </FormGroup>
-              </Col>
-            </Row>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="primary" onClick={this.saveUser}>Save</Button>{' '}
-            <Button color="secondary" onClick={this.toggleLarge}>Cancel</Button>
-          </ModalFooter>
-        </Modal>
+        />        
       </div>
     );
   }

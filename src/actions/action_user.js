@@ -7,6 +7,7 @@ export const FETCH_USERS = 'FETCH_USERS';
 export const FETCH_USERS_SUCCESS = 'FETCH_USERS_SUCCESS';
 export const FETCH_USERS_FAILURE = 'FETCH_USERS_FAILURE';
 // users add
+export const USERS_CREATE = 'USERS_CREATE';
 export const USERS_ADD_REQUEST = 'USERS_ADD_REQUEST';
 export const USERS_ADD_SUCCESS = 'USERS_ADD_SUCCESS';
 export const USERS_ADD_FAILURE = 'USERS_ADD_FAILURE';
@@ -15,9 +16,9 @@ export const USERS_EDIT_REQUEST = 'USERS_EDIT_REQUEST';
 export const USERS_EDIT_SUCCESS = 'USERS_EDIT_SUCCESS';
 export const USERS_EDIT_FAILURE = 'USERS_EDIT_FAILURE';
 // users delete
-export const USERS_DELETE_REQUEST = 'USERS_EDIT_REQUEST';
-export const USERS_DELETE_SUCCESS = 'USERS_EDIT_SUCCESS';
-export const USERS_DELETE_FAILURE = 'USERS_EDIT_FAILURE';
+export const USERS_DELETE_REQUEST = 'USERS_DELETE_REQUEST';
+export const USERS_DELETE_SUCCESS = 'USERS_DELETE_SUCCESS';
+export const USERS_DELETE_FAILURE = 'USERS_DELETE_FAILURE';
 // user get
 export const USERS_GET_REQUEST = 'USERS_GET_REQUEST';
 export const USERS_GET_SUCCESS = 'USERS_GET_SUCCESS';
@@ -40,7 +41,7 @@ export function fetchUsers(pageIndex, pageSize, fullname = '', user_name = '', t
 }
 
 export function usersAdd(user) {
-  return async(dispatch, getState) => {
+  return async (dispatch, getState) => {
     const actionResponse = await dispatch({
       [CALL_API]: {
         endpoint: `${api_url}/users`,
@@ -60,12 +61,12 @@ export function usersAdd(user) {
     //return actionResponse;
 
     // OR resolve another asyncAction here directly and pass the previous received payload value as argument...
-    return await dispatch(fetchUsers(1,10));
+    return await dispatch(fetchUsers(1, 10));
   };
 }
 
 export function usersEdit(user) {
-  return async(dispatch, getState) => {
+  return async (dispatch, getState) => {
     const actionResponse = await dispatch({
       [CALL_API]: {
         endpoint: `${api_url}/users/${user.Id}`,
@@ -85,18 +86,18 @@ export function usersEdit(user) {
     //return actionResponse;
 
     // OR resolve another asyncAction here directly and pass the previous received payload value as argument...
-    return await dispatch(fetchUsers(1,10));
+    return await dispatch(fetchUsers(1, 10));
   };
 }
 
 export function usersDelete(id) {
-  return async(dispatch, getState) => {
+  return async (dispatch, getState) => {
     const actionResponse = await dispatch({
       [CALL_API]: {
         endpoint: `${api_url}/users/${id}`,
-        method: 'DELETE',        
+        method: 'DELETE',
         headers: withAuth({ 'Content-Type': 'application/json' }),
-        types: [USERS_DELETE_REQUEST, USERS_DELETE_SUCCESS, USERS_DELETE_FAILURE]         
+        types: [USERS_DELETE_REQUEST, USERS_DELETE_SUCCESS, USERS_DELETE_FAILURE]
       }
     });
 
@@ -109,18 +110,18 @@ export function usersDelete(id) {
     //return actionResponse;
 
     // OR resolve another asyncAction here directly and pass the previous received payload value as argument...
-    return await dispatch(fetchUsers(1,10));
+    return await dispatch(fetchUsers(1, 10));
   };
 }
 
 export function usersGet(id) {
-  return async(dispatch, getState) => {
+  return async (dispatch, getState) => {
     const actionResponse = await dispatch({
       [CALL_API]: {
         endpoint: `${api_url}/users/${id}`,
-        method: 'GET',        
+        method: 'GET',
         headers: withAuth({ 'Content-Type': 'application/json' }),
-        types: [USERS_GET_REQUEST, USERS_GET_SUCCESS, USERS_GET_FAILURE]         
+        types: [USERS_GET_REQUEST, USERS_GET_SUCCESS, USERS_GET_FAILURE]
       }
     });
 
@@ -130,10 +131,16 @@ export function usersGet(id) {
     }
 
     // you can EITHER return the above resolved promise (actionResponse) here...
-    //return actionResponse;
+    return actionResponse;
 
     // OR resolve another asyncAction here directly and pass the previous received payload value as argument...
-    return await dispatch(fetchUsers(1,10));
+    // return await dispatch(fetchUsers(1,10));
   };
+}
+
+export function usersOpenModal() {
+  return {
+    type: USERS_CREATE
+  }
 }
 
