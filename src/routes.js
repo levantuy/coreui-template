@@ -1,7 +1,7 @@
 import React from 'react';
 import Loadable from 'react-loadable'
 
-import DefaultLayout from './containers/DefaultLayout';
+import DefaultLayout from './layouts/DefaultLayout';
 
 function Loading() {
   return <div>Loading...</div>;
@@ -173,7 +173,7 @@ const Widgets = Loadable({
 });
 
 const Users = Loadable({
-  loader: () => import('./pages/UserPage'),
+  loader: () => import('./containers/UserPage'),
   loading: Loading,
 });
 

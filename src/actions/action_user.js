@@ -3,7 +3,7 @@ import { withAuth } from '../reducers';
 import { api_url } from '../utils/api-config';
 
 // get users
-export const FETCH_USERS = 'FETCH_USERS';
+export const FETCH_USERS_REQUEST = 'FETCH_USERS_REQUEST';
 export const FETCH_USERS_SUCCESS = 'FETCH_USERS_SUCCESS';
 export const FETCH_USERS_FAILURE = 'FETCH_USERS_FAILURE';
 // users add
@@ -31,7 +31,7 @@ export function fetchUsers(pageIndex, pageSize, fullname = '', user_name = '', t
       headers: withAuth({ 'Content-Type': 'application/json' }),
       endpoint: `${api_url}/users/filter?pageIndex=${pageIndex}&pageSize=${pageSize}&fullname=${fullname}&user_name=${user_name}&tel=${tel}&email=${email}`,
       types: [
-        FETCH_USERS,
+        FETCH_USERS_REQUEST,
         FETCH_USERS_SUCCESS,
         FETCH_USERS_FAILURE
       ],

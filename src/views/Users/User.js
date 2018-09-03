@@ -26,7 +26,6 @@ class User extends Component {
   }
 
   componentDidMount() {
-    console.log(this.props.userState);
     if (this.props.userState.user)
       this.setState({
         id: this.props.userState.user.Id,
@@ -71,7 +70,6 @@ class User extends Component {
   }
 
   render() {
-    console.log(this.props.userState);
     return (
       <div>
         <Modal isOpen={this.props.userState.isModal} toggle={this.toggleLarge}
@@ -127,7 +125,7 @@ class User extends Component {
                   <DatePicker id="birthday" name="birthday" className="form-control"
                     dateFormat="DD/MM/YYYY"
                     todayButton={"hôm nay"}
-                    selected={moment(this.props.userState.user.Birthday)}
+                    selected={moment(this.state.birthday)}
                     onChange={(date) => { this.setState({ birthday: date }) }}
                     peekNextMonth
                     showMonthDropdown

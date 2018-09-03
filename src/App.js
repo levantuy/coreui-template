@@ -14,11 +14,11 @@ import 'simple-line-icons/css/simple-line-icons.css';
 import './scss/style.css'
 
 // Containers
-import { DefaultLayout } from './containers';
+import { DefaultLayout } from './layouts';
 // Pages
 import { Page404, Page500, Register } from './views/Pages';
-import Login from './pages/LoginPage';
-import LogoutPage from './pages/LogoutPage';
+import Login from './containers/LoginPage';
+import LogoutPage from './containers/LogoutPage';
 import { Provider } from 'react-redux'
 import AuthorizedRoute from './utils/AuthorizedRoute';
 import configureStore from './store/configureStore.js';

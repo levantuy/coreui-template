@@ -16,7 +16,7 @@ const initialState = {
 
 export default (state = initialState, action) => {
     switch (action.type) {
-        case user.FETCH_USERS:
+        case user.FETCH_USERS_REQUEST:
             return {
                 ...state, userState: {                    
                     loading: true,
