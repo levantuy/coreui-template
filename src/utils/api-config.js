@@ -5,14 +5,14 @@ const apiVersion = 'v1';
 
 const hostname = window && window.location && window.location.hostname;
 
-if(hostname === 'realsite.com') {
-  backendHost = 'https://api.realsite.com';
+if(hostname === 'server.flashlightvn.com') {
+  backendHost = 'http://server.flashlightvn.com';
 } else if(hostname === 'staging.realsite.com') {
-  backendHost = 'https://staging.api.realsite.com';
+  backendHost = 'http://server.flashlightvn.com';
 } else if(/^qa/.test(hostname)) {
   backendHost = `https://api.${hostname}`;
 } else {
-  backendHost = process.env.REACT_APP_BACKEND_HOST || 'http://localhost:63260';
+  backendHost = process.env.REACT_APP_BACKEND_HOST || 'http://server.flashlightvn.com';
 }
 
 export const api_url = `${backendHost}/api/${apiVersion}`;
